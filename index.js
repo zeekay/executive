@@ -3,11 +3,24 @@ var child_process = require('child_process');
 function exec(args, callback) {
   var err = '',
       out = '',
+      arg,
       proc;
 
-  // Split arguments from command
-  args = args.split(/\s+/g);
+  // Reverse arguments, javascript does not support lookbehind assertions so
+  // we'll use a lookahead assertion instead in our regex later.
+  args = args.split('').reverse().join('');
+  // Split on whitespace, respecting escaped spaces.
+  args = args.split(/\s+(?!\\)/g);
+  // Correct order of arguments.
+  args.reverse();
+  // Correct order of characters, removing escapes
+  for (var i=0; i<args.length; i++) {
+    args[i] = args[i].split('').reverse().join('').replace('\\ ', ' ');
+  }
+
+  // Grab command off the top of arguments
   var cmd = args.shift();
+  console.log(args)
 
   if (exec.quiet) {
     // Do not echo to stdout/stderr
