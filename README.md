@@ -8,7 +8,7 @@ An easy to use wrapper around `child_process.spawn`, useful for Cakefiles and th
 var exec = require('executive');
 
 exec('ls', function(err, out, code) {
-    console.log('Done, no need to echo out as it's piped to stdout by default);
+    // Done, no need to echo out as it's piped to stdout by default.
 });
 ```
 
