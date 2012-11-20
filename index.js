@@ -61,8 +61,6 @@ exec.safe = true;
 
 // Wrapper function that handles exec being called with only one command or several
 function wrapper(cmds, options, callback) {
-  var complete = 0;
-
   // If options is a function, assume we are called with only two arguments
   if (typeof options === 'function') {
     callback = options;
@@ -86,6 +84,8 @@ function wrapper(cmds, options, callback) {
   if (options.safe != null) {
     exec.safe = options.safe;
   }
+
+  var complete = 0;
 
   // Iterate over list of cmds, calling each in order as long as all of them return without errors
   function iterate() {
