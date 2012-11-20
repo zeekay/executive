@@ -1,30 +1,12 @@
 var child_process = require('child_process');
 
-var exec = function(args, options, callback) {
+function exec(args, options, callback) {
   var err = '',
       out = '',
-      complete = 0,
       proc;
 
   args = args.split(/\s+/g);
   var cmd = args.shift();
-
-  if (options == null) {
-    options = {};
-  }
-
-  if (callback == null) {
-    callback = function() {};
-  }
-
-  if (typeof options === 'function') {
-    options = {}
-    callback = options;
-  }
-
-  function iterate() {
-    var complete = 0
-  }
 
   if (exec.quiet) {
     proc = child_process.spawn(cmd, args);
@@ -53,6 +35,42 @@ var exec = function(args, options, callback) {
   proc.on('exit', function(code) {
     callback(err, out, code);
   });
-};
+}
 
-module.exports = exec;
+exec.quiet = false;
+
+function wrapper(cmds, options, callback) {
+  var complete = 0;
+
+  function iterate() {
+    exec(cmds[complete], options, callback);
+    complete++;
+
+    if (complete === cmds.length) {
+      return;
+    } else {
+      iterate();
+    }
+  }
+
+  if (options == null) {
+    options = {};
+  }
+
+  if (callback == null) {
+    callback = function() {};
+  }
+
+  if (typeof options === 'function') {
+    options = {}
+    callback = options;
+  }
+
+  if (Array.isArray(cmds)) {
+    iterate();
+  } else {
+    exec(cmds, options, callback);
+  }
+}
+
+module.exports = wrapper;
