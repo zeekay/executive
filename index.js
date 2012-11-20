@@ -20,7 +20,6 @@ function exec(args, callback) {
 
   // Grab command off the top of arguments
   var cmd = args.shift();
-  console.log(args)
 
   if (exec.quiet) {
     // Do not echo to stdout/stderr
