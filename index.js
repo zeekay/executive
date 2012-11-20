@@ -12,11 +12,11 @@ function exec(args, options, callback) {
     proc = child_process.spawn(cmd, args);
 
     proc.stdout.on('data', function(data) {
-      out += data;
+      out += data.toString();
     });
 
     proc.stderr.on('data', function(data) {
-      err += data;
+      err += data.toString();
     });
   } else {
     process.stdin.resume();
@@ -24,11 +24,11 @@ function exec(args, options, callback) {
     proc = child_process.spawn(cmd, args, {stdio: [process.stdin, process.stdout, process.stderr]});
 
     process.stdout.on('data', function(data) {
-      out += data;
+      out += data.toString();
     });
 
     process.stderr.on('data', function(data) {
-      err += data;
+      err += data.toString();
     });
   }
 
@@ -42,17 +42,6 @@ exec.quiet = false;
 function wrapper(cmds, options, callback) {
   var complete = 0;
 
-  function iterate() {
-    exec(cmds[complete], options, callback);
-    complete++;
-
-    if (complete === cmds.length) {
-      return;
-    } else {
-      iterate();
-    }
-  }
-
   if (options == null) {
     options = {};
   }
@@ -64,6 +53,21 @@ function wrapper(cmds, options, callback) {
   if (typeof options === 'function') {
     options = {}
     callback = options;
+  }
+
+  function iterate() {
+    exec(cmds[complete], options, function(err, out, code) {
+      if (code !== 0) {
+        return callback(err, out);
+      }
+
+      complete++;
+      if (complete === cmds.length) {
+        callback(err, out);
+      } else {
+        iterate();
+      }
+    });
   }
 
   if (Array.isArray(cmds)) {
