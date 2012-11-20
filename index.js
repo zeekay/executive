@@ -51,6 +51,8 @@ function exec(args, callback) {
     process.stdin.pause();
     callback(err, out, code);
   });
+
+  return proc;
 }
 
 // A couple of global options
@@ -87,7 +89,7 @@ function wrapper(cmds, options, callback) {
 
   // Iterate over list of cmds, calling each in order as long as all of them return without errors
   function iterate() {
-    exec(cmds[complete], function(err, out, code) {
+    return exec(cmds[complete], function(err, out, code) {
       if (exec.safe && code !== 0) {
         return callback(err, out, code);
       }
@@ -103,9 +105,9 @@ function wrapper(cmds, options, callback) {
 
   // If we are passed an array of commands, call each in serial, otherwise exec immediately.
   if (Array.isArray(cmds)) {
-    iterate();
+    return iterate();
   } else {
-    exec(cmds, callback);
+    return exec(cmds, callback);
   }
 }
 
