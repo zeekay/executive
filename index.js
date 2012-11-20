@@ -33,11 +33,13 @@ function exec(args, options, callback) {
   }
 
   proc.on('exit', function(code) {
+    process.stdin.pause();
     callback(err, out, code);
   });
 }
 
 exec.quiet = false;
+exec.safe = true;
 
 function wrapper(cmds, options, callback) {
   var complete = 0;
@@ -51,19 +53,19 @@ function wrapper(cmds, options, callback) {
   }
 
   if (typeof options === 'function') {
-    options = {}
     callback = options;
+    options = {};
   }
 
   function iterate() {
     exec(cmds[complete], options, function(err, out, code) {
-      if (code !== 0) {
-        return callback(err, out);
+      if (code !== 0 && exec.safe) {
+        return callback(err, out, code);
       }
 
       complete++;
       if (complete === cmds.length) {
-        callback(err, out);
+        callback(err, out, code);
       } else {
         iterate();
       }
