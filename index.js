@@ -25,6 +25,9 @@ function exec(args, callback) {
     // Do not echo to stdout/stderr
     proc = child_process.spawn(cmd, args);
 
+    // Increase listener limit (which is hard to run into but possible)
+    proc.setMaxListeners(0);
+
     proc.stdout.on('data', function(data) {
       out += data.toString();
     });
@@ -36,7 +39,13 @@ function exec(args, callback) {
     // Echo to stdout/stderr and handle stdin
     process.stdin.resume();
 
+    // Increase listener limit (which is hard to run into but possible)
+    process.stdin.setMaxListeners(0);
+    process.stdout.setMaxListeners(0);
+    process.stderr.setMaxListeners(0);
+
     proc = child_process.spawn(cmd, args, {stdio: [process.stdin, process.stdout, process.stderr]});
+    proc.setMaxListeners(0);
 
     process.stdout.on('data', function(data) {
       out += data.toString();
