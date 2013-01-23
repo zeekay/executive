@@ -1,8 +1,11 @@
 var child_process = require('child_process');
 
 function exec(args, callback) {
-  var err = '',
+  var env = process.env,
+      err = '',
       out = '',
+      cmd,
+      _var,
       arg,
       proc;
 
@@ -13,17 +16,28 @@ function exec(args, callback) {
   args = args.split(/\s+(?!\\)/g);
   // Correct order of arguments.
   args.reverse();
+
   // Correct order of characters, removing escapes
   for (var i=0; i<args.length; i++) {
     args[i] = args[i].split('').reverse().join('').replace('\\ ', ' ');
   }
 
-  // Grab command off the top of arguments
-  var cmd = args.shift();
+  // Parse out command and any enviromental variables
+  while ((cmd = args.shift()).indexOf('=') != -1) {
+    _var = cmd.split('=');
+
+    if (_var.length != 2)
+      throw new Error('Invalid enviromental variable specified.');
+
+    env[_var[0]] = _var[1];
+
+    if (args.length === 0)
+      throw new Error('No command specified.')
+  }
 
   if (exec.quiet) {
     // Do not echo to stdout/stderr
-    proc = child_process.spawn(cmd, args);
+    proc = child_process.spawn(cmd, args, {env: env});
 
     proc.stdout.on('data', function(data) {
       out += data.toString();
@@ -36,7 +50,7 @@ function exec(args, callback) {
     // Echo to stdout/stderr and handle stdin
     process.stdin.resume();
 
-    proc = child_process.spawn(cmd, args, {stdio: [process.stdin, process.stdout, process.stderr]});
+    proc = child_process.spawn(cmd, args, {env: env, stdio: [process.stdin, process.stdout, process.stderr]});
     proc.setMaxListeners(0);
 
     var stdoutListener = function(data) {
