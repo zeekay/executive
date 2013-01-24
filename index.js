@@ -1,5 +1,19 @@
 var child_process = require('child_process');
 
+function parseShell(s) {
+  return s.match(/(['"])((\\\1|[^\1])*?)\1|(\\ |\S)+/g).map(function(s) {
+    if (/^'/.test(s)) {
+      return s.replace(/^'|'$/g, '')
+              .replace(/\\(["'\\$`(){}!#&*|])/g, '$1');
+    } else if (/^"/.test(s)) {
+      return s.replace(/^"|"$/g, '')
+              .replace(/\\(["'\\$`(){}!#&*|])/g, '$1');
+    } else {
+      return s.replace(/\\([ "'\\$`(){}!#&*|])/g, '$1');
+    }
+  });
+}
+
 function exec(args, callback) {
   var env = process.env,
       err = '',
@@ -34,6 +48,8 @@ function exec(args, callback) {
     if (args.length === 0)
       throw new Error('No command specified.')
   }
+
+  args = parseShell(args.join(' '));
 
   if (exec.quiet) {
     // Do not echo to stdout/stderr
