@@ -77,8 +77,12 @@ function exec(args, callback) {
       err += data.toString();
     };
 
-    process.stdout.on('data', stdoutListener);
-    process.stderr.on('data', stderrListener);
+    try {
+      process.stdout.on('data', stdoutListener);
+      process.stderr.on('data', stderrListener);
+    } catch (err) {
+      // well guess that won't work...
+    }
 
     proc.on('exit', function(code) {
       process.stdin.pause();
