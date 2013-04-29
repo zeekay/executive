@@ -1,6 +1,8 @@
 var child_process = require('child_process');
 
 function parseShell(s) {
+  if (!s) return;
+
   return s.match(/(['"])((\\\1|[^\1])*?)\1|(\\ |\S)+/g).map(function(s) {
     if (/^'/.test(s)) {
       return s.replace(/^'|'$/g, '')
