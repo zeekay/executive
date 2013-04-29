@@ -160,6 +160,15 @@ function wrapper(cmds, options, callback) {
 }
 
 wrapper.quiet = function(cmds, options, callback) {
+  if (typeof options === 'function') {
+    callback = options;
+    options = {};
+  }
+
+  if (options == null) {
+    options = {};
+  }
+
   options.quiet = true;
   return wrapper(cmds, options, callback);
 }
