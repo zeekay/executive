@@ -64,6 +64,11 @@ function exec(args, callback) {
     proc.stderr.on('data', function(data) {
       err += data.toString();
     });
+
+    proc.on('exit', function(code) {
+      callback(err, out, code);
+    });
+
   } else {
     // Echo to stdout/stderr and handle stdin
     process.stdin.resume();
