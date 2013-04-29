@@ -159,4 +159,9 @@ function wrapper(cmds, options, callback) {
   }
 }
 
+wrapper.quiet = function(cmds, options, callback) {
+  options.quiet = true;
+  return wrapper(cmds, options, callback);
+}
+
 module.exports = wrapper;
