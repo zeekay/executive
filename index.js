@@ -16,7 +16,7 @@ function parseShell(s) {
   });
 }
 
-function exec(args, callback) {
+function exec(args, options, callback) {
   var env = process.env,
       err = '',
       out = '',
@@ -70,31 +70,35 @@ function exec(args, callback) {
     });
 
   } else {
-    // Echo to stdout/stderr and handle stdin
-    process.stdin.resume();
-
-    proc = child_process.spawn(cmd, args, {env: env, stdio: [process.stdin, process.stdout, process.stderr]});
+    // Echo to stdout/stderr and handle stdin (unless interactive)
+    proc = child_process.spawn(cmd, args, {env: env, stdio: [0, 1, 2]});
     proc.setMaxListeners(0);
 
-    var stdoutListener = function(data) {
-      out += data.toString();
-    };
+    if (!options.interactive) {
+      process.stdin.resume();
 
-    var stderrListener = function(data) {
-      err += data.toString();
-    };
+      var stdoutListener = function(data) {
+        out += data.toString();
+      };
 
-    try {
-      process.stdout.on('data', stdoutListener);
-      process.stderr.on('data', stderrListener);
-    } catch (err) {
-      // well guess that won't work...
+      var stderrListener = function(data) {
+        err += data.toString();
+      };
+
+      try {
+        process.stdout.on('data', stdoutListener);
+        process.stderr.on('data', stderrListener);
+      } catch (err) {
+        // well guess that won't work...
+      }
     }
 
     proc.on('exit', function(code) {
-      process.stdin.pause();
-      process.stdout.removeListener('data', stdoutListener);
-      process.stderr.removeListener('data', stderrListener);
+      if (!options.interactive) {
+        process.stdin.pause();
+        process.stdout.removeListener('data', stdoutListener);
+        process.stderr.removeListener('data', stderrListener);
+      }
 
       callback(err, out, code);
     });
@@ -137,7 +141,7 @@ function wrapper(cmds, options, callback) {
 
   // Iterate over list of cmds, calling each in order as long as all of them return without errors
   function iterate() {
-    return exec(cmds[complete], function(err, out, code) {
+    return exec(cmds[complete], options, function(err, out, code) {
       if (exec.safe && code !== 0) {
         return callback(err, out, code);
       }
@@ -155,7 +159,7 @@ function wrapper(cmds, options, callback) {
   if (Array.isArray(cmds)) {
     return iterate();
   } else {
-    return exec(cmds, callback);
+    return exec(cmds, options, callback);
   }
 }
 
@@ -170,6 +174,20 @@ wrapper.quiet = function(cmds, options, callback) {
   }
 
   options.quiet = true;
+  return wrapper(cmds, options, callback);
+}
+
+wrapper.interactive = function(cmds, options, callback) {
+  if (typeof options === 'function') {
+    callback = options;
+    options = {};
+  }
+
+  if (options == null) {
+    options = {};
+  }
+
+  options.interactive = true;
   return wrapper(cmds, options, callback);
 }
 

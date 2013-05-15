@@ -62,6 +62,13 @@ exec(['ls', 'aaaaaa', 'ls'], {safe: false}, function(err, out, code) {
 });
 ```
 
+If you need to interact with a program, for instance vim, use interactive mode:
+```javascript
+exec.interactive('vim', function(err) {
+    // Edit your commit message or whatnot
+});
+```
+
 You even do whatever you want with the child process object:
 ```javascript
 var exec = require('executive');
