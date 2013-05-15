@@ -38,8 +38,20 @@ exec(['ls', 'aaaaa', 'ls'], function(err, out, code) {
 ```
 
 ## Options
-A few different options are supported, you can pass them to exec, or in the case
-of `quiet` and `interactive` use the useful wrappers functions.
+Options may be passed as the second argument to exec and in the case of `quiet`
+and `interactive` helper functions exist.
+
+```javascript
+exec('ls', {options: quiet})
+```
+
+and
+
+```javascript
+exec.quiet('ls')
+```
+
+are equivalent.
 
 #### options.interactive | exec.interactive
 ##### default `false`
