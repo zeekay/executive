@@ -21,13 +21,6 @@ exec(['ls', 'ls', 'ls'], function(err, out, code) {
 });
 ```
 
-In the case of a failure, no additional commands will be executed by default.
-```javascript
-exec(['ls', 'aaaaa', 'ls'], function(err, out, code) {
-    // Only the first command succeeds, the last is never called.
-});
-```
-
 Arguments are parsed out properly for you:
 ```javascript
 var exec = require('executive');
@@ -37,12 +30,35 @@ exec('ls -AGF Foo\\ bar', function(err, out, code) {
 });
 ```
 
-If you'd prefer not to pipe `stdin`, `stdout`, `stderr`, or turn continue executing commands on failure:
+If you'd prefer not to pipe `stdin`, `stdout`, `stderr`:
 ```javascript
 var exec = require('executive');
 
-exec(['ls', 'aaaaa', 'ls'], {quiet: true, safe: false}, function(err, out, code) {
+exec(['ls', 'ls'], {quiet: true}, function(err, out, code) {
     // Not a peep is heard, and both ls commands will be executed.
+});
+```
+
+...or slightly more succint:
+
+```javascript
+exec.quiet(['ls', 'ls'], function(err, out, code) {
+    // both commands executed
+});
+```
+
+In the case of a failure, no additional commands will be executed:
+```javascript
+exec(['ls', 'aaaaa', 'ls'], function(err, out, code) {
+    // Only the first command succeeds, the last is never called.
+});
+```
+
+...but you can also choose to ignore errors:
+
+```javascript
+exec(['ls', 'aaaaaa', 'ls'], {safe: false}, function(err, out, code) {
+    // Both commands execute despite aaaaaa not being a valid executable.
 });
 ```
 
