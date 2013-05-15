@@ -34,23 +34,9 @@ exec(['ls', 'ls', 'ls'], function(err, out, code) {
 A few different options are supported, you can pass them to exec, or in the case
 of `quiet` and `interactive` use the useful wrappers in lieu of exec.
 
-### quiet `(default false)`
-If you'd prefer not to pipe `stdin`, `stdout`, `stderr` set `quiet` to `false`:
-```javascript
-exec(['ls', 'ls'], {quiet: true}, function(err, out, code) {
-    // Not a peep is heard, and both ls commands will be executed.
-});
-```
+#### options.safe
+##### default `true`
 
-...or slightly more succint:
-
-```javascript
-exec.quiet(['ls', 'ls'], function(err, out, code) {
-    // both commands executed
-});
-```
-
-### safe `(default true)`
 In the case of a failure, no additional commands will be executed:
 ```javascript
 exec(['ls', 'aaaaa', 'ls'], function(err, out, code) {
@@ -66,7 +52,27 @@ exec(['ls', 'aaaaaa', 'ls'], {safe: false}, function(err, out, code) {
 });
 ```
 
-### interactive `(default false)`
+#### options.quiet (exec.quiet)
+##### default `false`
+
+If you'd prefer not to pipe `stdin`, `stdout`, `stderr` set `quiet` to `false`:
+```javascript
+exec(['ls', 'ls'], {quiet: true}, function(err, out, code) {
+    // Not a peep is heard, and both ls commands will be executed.
+});
+```
+
+...or slightly more succint:
+
+```javascript
+exec.quiet(['ls', 'ls'], function(err, out, code) {
+    // both commands executed
+});
+```
+
+#### options.interactive (exec.interactive)
+##### default `false`
+
 If you need to interact with a program (your favorite text editor for instance)
 or watch the output of a long running process (`tail -f`), or just don't care
 about checking `stderr` and `stdout`, you can set `interactive` to `true`,
