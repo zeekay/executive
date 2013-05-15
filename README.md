@@ -30,56 +30,49 @@ exec(['ls', 'ls', 'ls'], function(err, out, code) {
 });
 ```
 
-## Options
-A few different options are supported, you can pass them to exec, or in the case
-of `quiet` and `interactive` use the useful wrappers in lieu of exec.
-
-#### options.safe
-##### default `true`
-
 In the case of a failure, no additional commands will be executed:
 ```javascript
 exec(['ls', 'aaaaa', 'ls'], function(err, out, code) {
-    // Only the first command succeeds, the last is never called.
+    // First command succeeds, second blows up, third is never called.
 });
 ```
 
-...but you can also choose to ignore errors by setting `safe` to `false`:
+## Options
+A few different options are supported, you can pass them to exec, or in the case
+of `quiet` and `interactive` use the useful wrappers functions.
 
-```javascript
-exec(['ls', 'aaaaaa', 'ls'], {safe: false}, function(err, out, code) {
-    // Both commands execute despite aaaaaa not being a valid executable.
-});
-```
-
-#### options.quiet (exec.quiet)
-##### default `false`
-
-If you'd prefer not to pipe `stdin`, `stdout`, `stderr` set `quiet` to `false`:
-```javascript
-exec(['ls', 'ls'], {quiet: true}, function(err, out, code) {
-    // Not a peep is heard, and both ls commands will be executed.
-});
-```
-
-...or slightly more succint:
-
-```javascript
-exec.quiet(['ls', 'ls'], function(err, out, code) {
-    // both commands executed
-});
-```
-
-#### options.interactive (exec.interactive)
+#### options.interactive | exec.interactive
 ##### default `false`
 
 If you need to interact with a program (your favorite text editor for instance)
 or watch the output of a long running process (`tail -f`), or just don't care
-about checking `stderr` and `stdout`, you can set `interactive` to `true`,
-either by using the wrapper or passing it as an option to exec:
+about checking `stderr` and `stdout`, set `interactive` to `true`:
+
 ```javascript
 exec.interactive('vim', function(err, out, code) {
     // Edit your commit message or whatnot
+});
+```
+
+#### options.quiet | exec.quiet
+##### default `false`
+
+If you'd prefer not to pipe `stdin`, `stdout`, `stderr` set `quiet` to `false`:
+```javascript
+exec.quiet(['ls', 'ls'], function(err, out, code) {
+    // Not a peep is heard, and both ls commands will be executed.
+});
+```
+
+#### options.safe
+##### default `true`
+
+In case you need to ignore errors during serial execution it's possible to set
+`safe` to `false`:
+
+```javascript
+exec(['ls', 'aaaaaa', 'ls'], {safe: false}, function(err, out, code) {
+    // Both commands execute despite aaaaaa not being a valid executable.
 });
 ```
 
