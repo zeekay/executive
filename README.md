@@ -50,7 +50,7 @@ You even do whatever you want with the child process object:
 ```javascript
 var exec = require('executive');
 
-child = exec('ls', {quiet: true});
+child = exec.quiet('ls');
 child.stdout.on('data', function(data) {
     console.log(data.toString());
 });
