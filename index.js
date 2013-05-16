@@ -48,7 +48,7 @@ function exec(args, options, callback) {
     env[_var[0]] = _var[1];
 
     if (args.length === 0)
-      throw new Error('No command specified.')
+      throw new Error('No command specified.');
   }
 
   args = parseShell(args.join(' '));
@@ -88,7 +88,7 @@ function exec(args, options, callback) {
       try {
         process.stdout.on('data', stdoutListener);
         process.stderr.on('data', stderrListener);
-      } catch (err) {
+      } catch (error) {
         // well guess that won't work...
       }
     }
@@ -120,20 +120,20 @@ function wrapper(cmds, options, callback) {
   }
 
   // Default options, callback
-  if (options == null) {
+  if (!options) {
     options = {};
   }
 
-  if (callback == null) {
+  if (!callback) {
     callback = function() {};
   }
 
   // Override defaults if options.quiet or options.safe are specified
-  if (options.quiet != null) {
+  if (options.quiet !== null) {
     exec.quiet = options.quiet;
   }
 
-  if (options.safe != null) {
+  if (options.safe !== null) {
     exec.safe = options.safe;
   }
 
@@ -169,13 +169,13 @@ wrapper.quiet = function(cmds, options, callback) {
     options = {};
   }
 
-  if (options == null) {
+  if (!options) {
     options = {};
   }
 
   options.quiet = true;
   return wrapper(cmds, options, callback);
-}
+};
 
 wrapper.interactive = function(cmds, options, callback) {
   if (typeof options === 'function') {
@@ -183,12 +183,12 @@ wrapper.interactive = function(cmds, options, callback) {
     options = {};
   }
 
-  if (options == null) {
+  if (!options) {
     options = {};
   }
 
   options.interactive = true;
   return wrapper(cmds, options, callback);
-}
+};
 
 module.exports = wrapper;
