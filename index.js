@@ -53,7 +53,7 @@ function exec(args, options, callback) {
 
   args = parseShell(args.join(' '));
 
-  if (exec.quiet) {
+  if (options.quiet) {
     // Do not echo to stdout/stderr
     proc = child_process.spawn(cmd, args, {env: env});
 
@@ -107,10 +107,6 @@ function exec(args, options, callback) {
   return proc;
 }
 
-// A couple of global options
-exec.quiet = false;
-exec.safe = true;
-
 // Wrapper function that handles exec being called with only one command or several
 function wrapper(cmds, options, callback) {
   // If options is a function, assume we are called with only two arguments
@@ -128,21 +124,12 @@ function wrapper(cmds, options, callback) {
     callback = function() {};
   }
 
-  // Override defaults if options.quiet or options.safe are specified
-  if (options.quiet !== null) {
-    exec.quiet = options.quiet;
-  }
-
-  if (options.safe !== null) {
-    exec.safe = options.safe;
-  }
-
   var complete = 0;
 
   // Iterate over list of cmds, calling each in order as long as all of them return without errors
   function iterate() {
     return exec(cmds[complete], options, function(err, out, code) {
-      if (exec.safe && code !== 0) {
+      if (options.safe && code !== 0) {
         return callback(err, out, code);
       }
 
@@ -173,6 +160,7 @@ wrapper.quiet = function(cmds, options, callback) {
     options = {};
   }
 
+  options.interactive = false;
   options.quiet = true;
   return wrapper(cmds, options, callback);
 };
@@ -188,6 +176,7 @@ wrapper.interactive = function(cmds, options, callback) {
   }
 
   options.interactive = true;
+  options.quiet = false;
   return wrapper(cmds, options, callback);
 };
 
