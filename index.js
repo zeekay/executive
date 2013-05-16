@@ -66,7 +66,7 @@ function bufferedExec(cmd, args, callback) {
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
 
-  child.on('close', function(code) {
+  child.on('exit', function(code) {
     stdout.destroy();
     stderr.destroy();
     callback(err, out, code);
