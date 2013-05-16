@@ -27,16 +27,16 @@ function bufferedExec(cmd, args, callback) {
 
   stdout.write = function(data) {
     out += data;
-  }
+  };
 
   stdout.end = function(data) {
     if (arguments.length) stdout.write(data);
     stdout.writable = false;
-  }
+  };
 
   stdout.destroy = function() {
     stdout.writable = false;
-  }
+  };
 
   // stream to capture stderr
   stderr = new Stream();
@@ -44,31 +44,31 @@ function bufferedExec(cmd, args, callback) {
 
   stderr.write = function(data) {
     err += data;
-  }
+  };
 
   stderr.end = function(data) {
     if (arguments.length) stderr.write(data);
     stderr.writable = false;
-  }
+  };
 
   stderr.destroy = function() {
     stderr.writable = false;
-  }
+  };
 
   var child = child_process.spawn(cmd, args, {stdio: [0, 'pipe', 'pipe']});
 
   child.setMaxListeners(0);
-  child.stdout.setEncoding('utf8')
-  child.stderr.setEncoding('utf8')
+  child.stdout.setEncoding('utf8');
+  child.stderr.setEncoding('utf8');
 
   child.stdout.pipe(stdout);
   child.stderr.pipe(stderr);
-  child.stdout.pipe(process.stdout)
-  child.stderr.pipe(process.stderr)
+  child.stdout.pipe(process.stdout);
+  child.stderr.pipe(process.stderr);
 
   child.on('close', function(code) {
-    stdout.destroy()
-    stderr.destroy()
+    stdout.destroy();
+    stderr.destroy();
     callback(err, out, code);
   });
 
@@ -81,7 +81,7 @@ function interactiveExec(cmd, args, callback) {
   child.setMaxListeners(0);
 
   child.on('exit', function(code) {
-    callback(null, null, code)
+    callback(null, null, code);
   });
 
   return child;
