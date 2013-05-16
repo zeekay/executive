@@ -1,4 +1,5 @@
-var child_process = require('child_process');
+var child_process = require('child_process'),
+    Stream = require('stream');
 
 function parseShell(s) {
   if (!s) return;
@@ -16,14 +17,103 @@ function parseShell(s) {
   });
 }
 
-function exec(args, options, callback) {
-  var env = process.env,
+function bufferedExec(cmd, args, callback) {
+  var err = '',
+      out = '';
+
+  // stream to capture stdout
+  stdout = new Stream();
+  stdout.writable = true;
+
+  stdout.write = function(data) {
+    out += data;
+  }
+
+  stdout.end = function(data) {
+    if (arguments.length) stdout.write(data);
+    stdout.writable = false;
+  }
+
+  stdout.destroy = function() {
+    stdout.writable = false;
+  }
+
+  // stream to capture stderr
+  stderr = new Stream();
+  stderr.writable = true;
+
+  stderr.write = function(data) {
+    err += data;
+  }
+
+  stderr.end = function(data) {
+    if (arguments.length) stderr.write(data);
+    stderr.writable = false;
+  }
+
+  stderr.destroy = function() {
+    stderr.writable = false;
+  }
+
+  var child = child_process.spawn(cmd, args, {stdio: [0, 'pipe', 'pipe']});
+
+  child.setMaxListeners(0);
+  child.stdout.setEncoding('utf8')
+  child.stderr.setEncoding('utf8')
+
+  child.stdout.pipe(stdout);
+  child.stderr.pipe(stderr);
+  child.stdout.pipe(process.stdout)
+  child.stderr.pipe(process.stderr)
+
+  child.on('close', function(code) {
+    stdout.destroy()
+    stderr.destroy()
+    callback(err, out, code);
+  });
+
+  return child;
+}
+
+function interactiveExec(cmd, args, callback) {
+  var child = child_process.spawn(cmd, args, {stdio: [0, 1, 2]});
+
+  child.setMaxListeners(0);
+
+  child.on('exit', function(code) {
+    callback(null, null, code)
+  });
+
+  return child;
+}
+
+// Do not echo to stdout/stderr
+function quietExec(cmd, args, callback) {
+  var child = child_process.spawn(cmd, args),
       err = '',
-      out = '',
-      cmd,
-      _var,
-      arg,
-      proc;
+      out = '';
+
+  child.setMaxListeners(0);
+  child.stdout.setEncoding('utf8');
+  child.stderr.setEncoding('utf8');
+
+  child.stdout.on('data', function(data) {
+    out += data;
+  });
+
+  child.stderr.on('data', function(data) {
+    err += data;
+  });
+
+  child.on('close', function(code) {
+    callback(err, out, code);
+  });
+
+  return child;
+}
+
+function exec(args, options, callback) {
+  var _var, cmd, arg;
 
   // Reverse arguments, javascript does not support lookbehind assertions so
   // we'll use a lookahead assertion instead in our regex later.
@@ -48,68 +138,19 @@ function exec(args, options, callback) {
     env[_var[0]] = _var[1];
 
     if (args.length === 0)
-      throw new Error('No command specified.')
+      throw new Error('No command specified.');
   }
 
   args = parseShell(args.join(' '));
 
-  if (exec.quiet) {
-    // Do not echo to stdout/stderr
-    proc = child_process.spawn(cmd, args, {env: env});
+  if (options.quiet)
+    return execQuiet(cmd, args, callback);
 
-    proc.stdout.on('data', function(data) {
-      out += data.toString();
-    });
+  if (options.interactive)
+    return execInteractive(cmd, args, callback);
 
-    proc.stderr.on('data', function(data) {
-      err += data.toString();
-    });
-
-    proc.on('exit', function(code) {
-      callback(err, out, code);
-    });
-
-  } else {
-    // Echo to stdout/stderr and handle stdin (unless interactive)
-    proc = child_process.spawn(cmd, args, {env: env, stdio: [0, 1, 2]});
-    proc.setMaxListeners(0);
-
-    if (!options.interactive) {
-      process.stdin.resume();
-
-      var stdoutListener = function(data) {
-        out += data.toString();
-      };
-
-      var stderrListener = function(data) {
-        err += data.toString();
-      };
-
-      try {
-        process.stdout.on('data', stdoutListener);
-        process.stderr.on('data', stderrListener);
-      } catch (err) {
-        // well guess that won't work...
-      }
-    }
-
-    proc.on('exit', function(code) {
-      if (!options.interactive) {
-        process.stdin.pause();
-        process.stdout.removeListener('data', stdoutListener);
-        process.stderr.removeListener('data', stderrListener);
-      }
-
-      callback(err, out, code);
-    });
-  }
-
-  return proc;
+  return bufferedExec(cmd, args, callback);
 }
-
-// A couple of global options
-exec.quiet = false;
-exec.safe = true;
 
 // Wrapper function that handles exec being called with only one command or several
 function wrapper(cmds, options, callback) {
@@ -120,35 +161,31 @@ function wrapper(cmds, options, callback) {
   }
 
   // Default options, callback
-  if (options == null) {
+  if (!options) {
     options = {};
   }
 
-  if (callback == null) {
+  if (!callback) {
     callback = function() {};
   }
 
-  // Override defaults if options.quiet or options.safe are specified
-  if (options.quiet != null) {
-    exec.quiet = options.quiet;
-  }
-
-  if (options.safe != null) {
-    exec.safe = options.safe;
-  }
-
-  var complete = 0;
+  var complete = 0,
+      outBuf = '',
+      errBuf = '';
 
   // Iterate over list of cmds, calling each in order as long as all of them return without errors
   function iterate() {
     return exec(cmds[complete], options, function(err, out, code) {
-      if (exec.safe && code !== 0) {
-        return callback(err, out, code);
+      errBuf += err;
+      outBuf += out;
+
+      if (options.safe && code !== 0) {
+        return callback(errBuf, outBuf, code);
       }
 
       complete++;
       if (complete === cmds.length) {
-        callback(err, out, code);
+        callback(errBuf, outBuf, code);
       } else {
         iterate();
       }
@@ -169,13 +206,14 @@ wrapper.quiet = function(cmds, options, callback) {
     options = {};
   }
 
-  if (options == null) {
+  if (!options) {
     options = {};
   }
 
+  options.interactive = false;
   options.quiet = true;
   return wrapper(cmds, options, callback);
-}
+};
 
 wrapper.interactive = function(cmds, options, callback) {
   if (typeof options === 'function') {
@@ -183,12 +221,13 @@ wrapper.interactive = function(cmds, options, callback) {
     options = {};
   }
 
-  if (options == null) {
+  if (!options) {
     options = {};
   }
 
   options.interactive = true;
+  options.quiet = false;
   return wrapper(cmds, options, callback);
-}
+};
 
 module.exports = wrapper;
