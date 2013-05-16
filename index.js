@@ -144,10 +144,10 @@ function exec(args, options, callback) {
   args = parseShell(args.join(' '));
 
   if (options.quiet)
-    return execQuiet(cmd, args, callback);
+    return quietExec(cmd, args, callback);
 
   if (options.interactive)
-    return execInteractive(cmd, args, callback);
+    return interactiveExec(cmd, args, callback);
 
   return bufferedExec(cmd, args, callback);
 }
