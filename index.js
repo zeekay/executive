@@ -65,7 +65,7 @@ function exec(args, options, callback) {
       err += data.toString();
     });
 
-    proc.on('exit', function(code) {
+    proc.on('close', function(code) {
       callback(err, out, code);
     });
 
