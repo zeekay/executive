@@ -17,7 +17,7 @@ function parseShell(s) {
   });
 }
 
-function bufferedExec(cmd, args, callback) {
+function bufferedExec(cmd, args, env, callback) {
   var err = '',
       out = '';
 
@@ -55,7 +55,7 @@ function bufferedExec(cmd, args, callback) {
     stderr.writable = false;
   };
 
-  var child = child_process.spawn(cmd, args, {stdio: [0, 'pipe', 'pipe']});
+  var child = child_process.spawn(cmd, args, {env: env, stdio: [0, 'pipe', 'pipe']});
 
   child.setMaxListeners(0);
   child.stdout.setEncoding('utf8');
@@ -66,7 +66,7 @@ function bufferedExec(cmd, args, callback) {
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
 
-  child.on('exit', function(code) {
+  child.on('close', function(code) {
     stdout.destroy();
     stderr.destroy();
     callback(err, out, code);
@@ -75,8 +75,8 @@ function bufferedExec(cmd, args, callback) {
   return child;
 }
 
-function interactiveExec(cmd, args, callback) {
-  var child = child_process.spawn(cmd, args, {stdio: [0, 1, 2]});
+function interactiveExec(cmd, args, env, callback) {
+  var child = child_process.spawn(cmd, args, {env: env, stdio: [0, 1, 2]});
 
   child.setMaxListeners(0);
 
@@ -88,8 +88,8 @@ function interactiveExec(cmd, args, callback) {
 }
 
 // Do not echo to stdout/stderr
-function quietExec(cmd, args, callback) {
-  var child = child_process.spawn(cmd, args),
+function quietExec(cmd, args, env, callback) {
+  var child = child_process.spawn(cmd, args, {env: env}),
       err = '',
       out = '';
 
@@ -113,7 +113,10 @@ function quietExec(cmd, args, callback) {
 }
 
 function exec(args, options, callback) {
-  var _var, cmd, arg;
+  var env = {}, e, cmd, arg;
+
+  // Copy enviromental variables from process.env.
+  for (e in process.env) env[e] = process.env[e];
 
   // Reverse arguments, javascript does not support lookbehind assertions so
   // we'll use a lookahead assertion instead in our regex later.
@@ -130,12 +133,12 @@ function exec(args, options, callback) {
 
   // Parse out command and any enviromental variables
   while ((cmd = args.shift()).indexOf('=') != -1) {
-    _var = cmd.split('=');
+    e = cmd.split('=');
 
-    if (_var.length != 2)
+    if (e.length != 2)
       throw new Error('Invalid enviromental variable specified.');
 
-    env[_var[0]] = _var[1];
+    env[e[0]] = e[1];
 
     if (args.length === 0)
       throw new Error('No command specified.');
@@ -144,12 +147,12 @@ function exec(args, options, callback) {
   args = parseShell(args.join(' '));
 
   if (options.quiet)
-    return quietExec(cmd, args, callback);
+    return quietExec(cmd, args, env, callback);
 
   if (options.interactive)
-    return interactiveExec(cmd, args, callback);
+    return interactiveExec(cmd, args, env, callback);
 
-  return bufferedExec(cmd, args, callback);
+  return bufferedExec(cmd, args, env, callback);
 }
 
 // Wrapper function that handles exec being called with only one command or several
@@ -229,5 +232,9 @@ wrapper.interactive = function(cmds, options, callback) {
   options.quiet = false;
   return wrapper(cmds, options, callback);
 };
+
+wrapper.bufferedExec = bufferedExec
+wrapper.quietExec = quietExec
+wrapper.interactiveExec = interactiveExec
 
 module.exports = wrapper;
