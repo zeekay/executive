@@ -1,6 +1,6 @@
 exec = require './'
 
-task 'test', 'run tests', ->
+task 'test', 'Run tests', ->
   exec "NODE_ENV=test
     ./node_modules/.bin/mocha
     --compilers coffee:coffee-script
@@ -9,7 +9,7 @@ task 'test', 'run tests', ->
     --timeout 60000
     test"
 
-task 'publish', 'Publish current version to NPM', ->
+task 'publish', 'Push current version to github and publish on npm', ->
   exec [
     'git push'
     'npm publish'
