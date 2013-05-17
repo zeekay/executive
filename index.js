@@ -168,6 +168,10 @@ function wrapper(cmds, options, callback) {
     options = {};
   }
 
+  if (typeof options.safe === 'undefined') {
+    options.safe = true;
+  }
+
   if (!callback) {
     callback = function() {};
   }
