@@ -48,4 +48,26 @@ describe('executive', function() {
       });
     });
   });
+
+  describe('parseShell', function() {
+    it('should return an array', function() {
+      exec.parseShell('one').should.be.an.instanceOf(Array);
+    });
+
+    it('should split arguments', function() {
+      exec.parseShell('one two three').should.have.length.of(3);
+    });
+
+    it('should parse escaped spaces', function() {
+      exec.parseShell('one\\ two\\ three').should.contain('one two three');
+    });
+
+    it('should understand quoted arguments', function() {
+      exec.parseShell('"in quotes" "in quotes again"').should.have.length.of(2);
+    });
+
+    it('should understand quoted long options', function() {
+      exec.parseShell('--long-arg="one two three"').should.contain('--long-arg="one two three"');
+    });
+  });
 });
