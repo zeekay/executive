@@ -237,8 +237,9 @@ wrapper.interactive = function(cmds, options, callback) {
   return wrapper(cmds, options, callback);
 };
 
-wrapper.bufferedExec = bufferedExec
-wrapper.quietExec = quietExec
-wrapper.interactiveExec = interactiveExec
+wrapper.bufferedExec = bufferedExec;
+wrapper.quietExec = quietExec;
+wrapper.interactiveExec = interactiveExec;
+wrapper.parseShell = parseShell;
 
 module.exports = wrapper;
