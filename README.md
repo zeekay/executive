@@ -37,6 +37,21 @@ exec(['ls', 'aaaaa', 'ls'], function(err, out, code) {
 });
 ```
 
+Commands can also be specified as a list of objects or a mix:
+```javascript
+exec([
+    {
+        cmd: 'ls',
+        args: [ '-la' ]
+    },
+    'ls -la',
+    {
+        cmd: 'ls',
+        args: [ '-l' ]
+    },
+])
+```
+
 ## Options
 Options may be passed as the second argument to exec and in the case of `quiet`
 and `interactive` helper functions exist.
