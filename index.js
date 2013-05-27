@@ -118,33 +118,52 @@ function exec(args, options, callback) {
   // Copy enviromental variables from process.env.
   for (e in process.env) env[e] = process.env[e];
 
-  // Reverse arguments, javascript does not support lookbehind assertions so
-  // we'll use a lookahead assertion instead in our regex later.
-  args = args.split('').reverse().join('');
-  // Split on whitespace, respecting escaped spaces.
-  args = args.split(/\s+(?!\\)/g);
-  // Correct order of arguments.
-  args.reverse();
+  // If args is a string, parse it into cmd/args/env.
+  if (typeof args === 'string') {
+    // Reverse arguments, javascript does not support lookbehind assertions so
+    // we'll use a lookahead assertion instead in our regex later.
+    args = args.split('').reverse().join('');
+    // Split on whitespace, respecting escaped spaces.
+    args = args.split(/\s+(?!\\)/g);
+    // Correct order of arguments.
+    args.reverse();
 
-  // Correct order of characters, removing escapes
-  for (var i=0; i<args.length; i++) {
-    args[i] = args[i].split('').reverse().join('').replace('\\ ', ' ');
+    // Correct order of characters, removing escapes
+    for (var i=0; i<args.length; i++) {
+      args[i] = args[i].split('').reverse().join('').replace('\\ ', ' ');
+    }
+
+    // Parse out command and any enviromental variables
+    while ((cmd = args.shift()).indexOf('=') != -1) {
+      e = cmd.split('=');
+
+      if (e.length != 2)
+        throw new Error('Invalid enviromental variable specified.');
+
+      env[e[0]] = e[1];
+
+      if (args.length === 0)
+        throw new Error('No command specified.');
+    }
+
+    args = parseShell(args.join(' '));
   }
+  // Here args should be an object.
+  else {
+    cmd = args.cmd;
 
-  // Parse out command and any enviromental variables
-  while ((cmd = args.shift()).indexOf('=') != -1) {
-    e = cmd.split('=');
+    // Merge any specified env vars.
+    if (args.env) {
+      for (e in args.env) env[e] = args.env[e];
+    }
 
-    if (e.length != 2)
-      throw new Error('Invalid enviromental variable specified.');
-
-    env[e[0]] = e[1];
-
-    if (args.length === 0)
-      throw new Error('No command specified.');
+    if (args.args) {
+      args = args.args;
+    }
+    else {
+      args = [];
+    }
   }
-
-  args = parseShell(args.join(' '));
 
   if (options.quiet)
     return quietExec(cmd, args, env, callback);
