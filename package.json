@@ -1,6 +1,6 @@
 {
   "name": "executive",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "exec for the lazy",
   "main": "index.js",
   "scripts": {
