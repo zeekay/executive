@@ -17,7 +17,7 @@ function parseShell(s) {
   });
 }
 
-function bufferedExec(cmd, args, env, callback) {
+function bufferedExec(cmd, args, opts, callback) {
   var err = '',
       out = '';
 
@@ -55,7 +55,8 @@ function bufferedExec(cmd, args, env, callback) {
     stderr.writable = false;
   };
 
-  var child = child_process.spawn(cmd, args, {env: env, stdio: [0, 'pipe', 'pipe']});
+  opts.stdio = [0, 'pipe', 'pipe']
+  var child  = child_process.spawn(cmd, args, opts);
 
   child.setMaxListeners(0);
   child.stdout.setEncoding('utf8');
@@ -75,8 +76,9 @@ function bufferedExec(cmd, args, env, callback) {
   return child;
 }
 
-function interactiveExec(cmd, args, env, callback) {
-  var child = child_process.spawn(cmd, args, {env: env, stdio: [0, 1, 2]});
+function interactiveExec(cmd, args, opts, callback) {
+  opts.stdio = 'inherit'
+  var child  = child_process.spawn(cmd, args, opts);
 
   child.setMaxListeners(0);
 
@@ -88,8 +90,8 @@ function interactiveExec(cmd, args, env, callback) {
 }
 
 // Do not echo to stdout/stderr
-function quietExec(cmd, args, env, callback) {
-  var child = child_process.spawn(cmd, args, {env: env}),
+function quietExec(cmd, args, opts, callback) {
+  var child = child_process.spawn(cmd, args, opts),
       err = '',
       out = '';
 
@@ -112,7 +114,7 @@ function quietExec(cmd, args, env, callback) {
   return child;
 }
 
-function exec(args, options, callback) {
+function exec(args, opts, callback) {
   var env = {}, e, cmd, arg;
 
   // Copy enviromental variables from process.env.
@@ -165,30 +167,33 @@ function exec(args, options, callback) {
     }
   }
 
-  if (options.quiet)
-    return quietExec(cmd, args, env, callback);
+  // Pass env to spawn
+  opts.env = env;
 
-  if (options.interactive)
-    return interactiveExec(cmd, args, env, callback);
+  if (opts.quiet)
+    return quietExec(cmd, args, opts, callback);
 
-  return bufferedExec(cmd, args, env, callback);
+  if (opts.interactive)
+    return interactiveExec(cmd, args, opts, callback);
+
+  return bufferedExec(cmd, args, opts, callback);
 }
 
 // Wrapper function that handles exec being called with only one command or several
-function wrapper(cmds, options, callback) {
-  // If options is a function, assume we are called with only two arguments
-  if (typeof options === 'function') {
-    callback = options;
-    options = {};
+function wrapper(cmds, opts, callback) {
+  // If opts is a function, assume we are called with only two arguments
+  if (typeof opts === 'function') {
+    callback = opts;
+    opts = {};
   }
 
-  // Default options, callback
-  if (!options) {
-    options = {};
+  // Default opts, callback
+  if (!opts) {
+    opts = {};
   }
 
-  if (typeof options.safe === 'undefined') {
-    options.safe = true;
+  if (typeof opts.safe === 'undefined') {
+    opts.safe = true;
   }
 
   if (!callback) {
@@ -201,11 +206,11 @@ function wrapper(cmds, options, callback) {
 
   // Iterate over list of cmds, calling each in order as long as all of them return without errors
   function iterate() {
-    return exec(cmds[complete], options, function(err, out, code) {
+    return exec(cmds[complete], opts, function(err, out, code) {
       errBuf += err;
       outBuf += out;
 
-      if (options.safe && code !== 0) {
+      if (opts.safe && code !== 0) {
         return callback(errBuf, outBuf, code);
       }
 
@@ -222,38 +227,38 @@ function wrapper(cmds, options, callback) {
   if (Array.isArray(cmds)) {
     return iterate();
   } else {
-    return exec(cmds, options, callback);
+    return exec(cmds, opts, callback);
   }
 }
 
-wrapper.quiet = function(cmds, options, callback) {
-  if (typeof options === 'function') {
-    callback = options;
-    options = {};
+wrapper.quiet = function(cmds, opts, callback) {
+  if (typeof opts === 'function') {
+    callback = opts;
+    opts = {};
   }
 
-  if (!options) {
-    options = {};
+  if (!opts) {
+    opts = {};
   }
 
-  options.interactive = false;
-  options.quiet = true;
-  return wrapper(cmds, options, callback);
+  opts.interactive = false;
+  opts.quiet = true;
+  return wrapper(cmds, opts, callback);
 };
 
-wrapper.interactive = function(cmds, options, callback) {
-  if (typeof options === 'function') {
-    callback = options;
-    options = {};
+wrapper.interactive = function(cmds, opts, callback) {
+  if (typeof opts === 'function') {
+    callback = opts;
+    opts = {};
   }
 
-  if (!options) {
-    options = {};
+  if (!opts) {
+    opts = {};
   }
 
-  options.interactive = true;
-  options.quiet = false;
-  return wrapper(cmds, options, callback);
+  opts.interactive = true;
+  opts.quiet = false;
+  return wrapper(cmds, opts, callback);
 };
 
 wrapper.bufferedExec = bufferedExec;
