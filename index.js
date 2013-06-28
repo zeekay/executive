@@ -72,9 +72,10 @@ function bufferedExec(cmd, args, opts, callback) {
 
     if (code !== 0) {
       _err = new Error(cmd + 'exited with code ' + code);
-      _err.code = code
-      _err.stdout = out
+      _err.cmd    = cmd + ' ' + args.join(' ')
+      _err.code   = code
       _err.stderr = err
+      _err.stdout = out
     }
 
     stdout.destroy();
@@ -122,9 +123,10 @@ function quietExec(cmd, args, opts, callback) {
 
     if (code !== 0) {
       _err = new Error(cmd + 'exited with code ' + code);
-      _err.code = code
-      _err.stdout = out
+      _err.cmd    = cmd + ' ' + args.join(' ')
+      _err.code   = code
       _err.stderr = err
+      _err.stdout = out
     }
 
     callback(_err, out, err, code);
