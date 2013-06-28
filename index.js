@@ -68,9 +68,19 @@ function bufferedExec(cmd, args, opts, callback) {
   child.stderr.pipe(process.stderr);
 
   child.on('close', function(code) {
+    var _err = null;
+
+    if (code !== 0) {
+      _err = new Error(cmd + 'exited with code ' + code);
+      _err.code = code
+      _err.stdout = out
+      _err.stderr = err
+    }
+
     stdout.destroy();
     stderr.destroy();
-    callback(err, out, code);
+
+    callback(_err, out, err, code);
   });
 
   return child;
@@ -83,7 +93,7 @@ function interactiveExec(cmd, args, opts, callback) {
   child.setMaxListeners(0);
 
   child.on('exit', function(code) {
-    callback(null, null, code);
+    callback(null, null, null, code);
   });
 
   return child;
@@ -108,7 +118,16 @@ function quietExec(cmd, args, opts, callback) {
   });
 
   child.on('close', function(code) {
-    callback(err, out, code);
+    var _err = null;
+
+    if (code !== 0) {
+      _err = new Error(cmd + 'exited with code ' + code);
+      _err.code = code
+      _err.stdout = out
+      _err.stderr = err
+    }
+
+    callback(_err, out, err, code);
   });
 
   return child;
