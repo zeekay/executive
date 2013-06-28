@@ -18,7 +18,8 @@ function parseShell(s) {
 }
 
 function bufferedExec(cmd, args, opts, callback) {
-  var err = '',
+  var args = args || [],
+      err = '',
       out = '';
 
   // stream to capture stdout
@@ -56,7 +57,13 @@ function bufferedExec(cmd, args, opts, callback) {
   };
 
   opts.stdio = [0, 'pipe', 'pipe']
-  var child  = child_process.spawn(cmd, args, opts);
+
+  var child = child_process.spawn(cmd, args, opts);
+
+  child.on('error', function(err) {
+    err.cmd = cmd;
+    callback(err);
+  })
 
   child.setMaxListeners(0);
   child.stdout.setEncoding('utf8');
@@ -89,7 +96,13 @@ function bufferedExec(cmd, args, opts, callback) {
 
 function interactiveExec(cmd, args, opts, callback) {
   opts.stdio = 'inherit'
-  var child  = child_process.spawn(cmd, args, opts);
+
+  var child = child_process.spawn(cmd, args, opts);
+
+  child.on('error', function(err) {
+    err.cmd = cmd;
+    callback(err);
+  })
 
   child.setMaxListeners(0);
 
@@ -102,9 +115,16 @@ function interactiveExec(cmd, args, opts, callback) {
 
 // Do not echo to stdout/stderr
 function quietExec(cmd, args, opts, callback) {
-  var child = child_process.spawn(cmd, args, opts),
+  var args = args || [],
       err = '',
       out = '';
+
+  var child = child_process.spawn(cmd, args, opts);
+
+  child.on('error', function(err) {
+    err.cmd = cmd;
+    callback(err);
+  })
 
   child.setMaxListeners(0);
   child.stdout.setEncoding('utf8');
