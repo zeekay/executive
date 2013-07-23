@@ -7,7 +7,7 @@ An easy to use wrapper around `child_process.spawn`, useful for Cakefiles and th
 ```javascript
 var exec = require('executive');
 
-exec('ls', function(err, out, code) {
+exec('ls', function(err, stdout, stderr) {
     // Done, no need to echo out as it's piped to stdout by default.
 });
 ```
@@ -16,7 +16,7 @@ Arguments are parsed out properly for you:
 ```javascript
 var exec = require('executive');
 
-exec('ls -AGF Foo\\ bar', function(err, out, code) {
+exec('ls -AGF Foo\\ bar', function(err, stdout, stderr) {
     // Note the escaped folder name.
 });
 ```
@@ -25,14 +25,14 @@ Also supports simple serial execution of commands:
 ```javascript
 var exec = require('executive');
 
-exec(['ls', 'ls', 'ls'], function(err, out, code) {
+exec(['ls', 'ls', 'ls'], function(err, stdout, stderr) {
     // All three ls commands are called in order.
 });
 ```
 
 In the case of a failure, no additional commands will be executed:
 ```javascript
-exec(['ls', 'aaaaa', 'ls'], function(err, out, code) {
+exec(['ls', 'aaaaa', 'ls'], function(err, stdout, stderr) {
     // First command succeeds, second blows up, third is never called.
 });
 ```
@@ -76,7 +76,7 @@ or watch the output of a long running process (`tail -f`), or just don't care
 about checking `stderr` and `stdout`, set `interactive` to `true`:
 
 ```javascript
-exec.interactive('vim', function(err, out, code) {
+exec.interactive('vim', function(err) {
     // Edit your commit message or whatnot
 });
 ```
@@ -86,7 +86,7 @@ exec.interactive('vim', function(err, out, code) {
 
 If you'd prefer not to pipe `stdin`, `stdout`, `stderr` set `quiet` to `false`:
 ```javascript
-exec.quiet(['ls', 'ls'], function(err, out, code) {
+exec.quiet(['ls', 'ls'], function(err, stdout, stderr) {
     // Not a peep is heard, and both ls commands will be executed.
 });
 ```
@@ -98,7 +98,7 @@ In case you need to ignore errors during serial execution it's possible to set
 `safe` to `false`:
 
 ```javascript
-exec(['ls', 'aaaaaa', 'ls'], {safe: false}, function(err, out, code) {
+exec(['ls', 'aaaaaa', 'ls'], {safe: false}, function(err, stdout, stderr) {
     // Both commands execute despite aaaaaa not being a valid executable.
 });
 ```
