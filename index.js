@@ -247,15 +247,16 @@ function wrapper(cmds, opts, callback) {
 
   // Iterate over list of cmds, calling each in order as long as all of them return without errors
   function iterate() {
-    return exec(cmds[complete], opts, function(err, out, code) {
-      errBuf += err;
-      outBuf += out;
+    return exec(cmds[complete], opts, function(err, stdout, stderr, code) {
+      errBuf += stderr;
+      outBuf += stdout;
 
       if (opts.safe && code !== 0) {
         return callback(errBuf, outBuf, code);
       }
 
       complete++;
+
       if (complete === cmds.length) {
         callback(errBuf, outBuf, code);
       } else {
