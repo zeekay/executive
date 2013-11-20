@@ -1,7 +1,7 @@
 {
   "name": "executive",
   "version": "0.4.3",
-  "description": "Elegant command execution",
+  "description": "Elegant command execution.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
