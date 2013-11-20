@@ -1,20 +1,28 @@
 {
   "name": "executive",
   "version": "0.4.2",
-  "description": "exec for the lazy",
+  "description": "Elegant command execution",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "homepage": "http://github.com/zeekay/executive",
+  "bugs": {
+    "url": "http://github.com/zeekay/executive/issues"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/zeekay/executive"
   },
   "keywords": [
+    "shell",
+    "commands",
     "exec",
+    "executable",
+    "run",
     "child_process"
   ],
-  "author": "Zach Kelling <zeekayy@gmail.com> (http://whatit.is)",
+  "author": "Zach Kelling <zk@monoid.io> (http://monoid.io)",
   "license": "BSD",
   "readmeFilename": "README.md",
   "devDependencies": {
