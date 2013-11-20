@@ -18,9 +18,11 @@ function parseShell(s) {
 }
 
 function bufferedExec(cmd, args, opts, callback) {
-  var args = args || [],
-      err = '',
+  var err = '',
       out = '';
+
+  if (args == null)
+    args = [];
 
   // stream to capture stdout
   stdout = new Stream();
@@ -115,9 +117,11 @@ function interactiveExec(cmd, args, opts, callback) {
 
 // Do not echo to stdout/stderr
 function quietExec(cmd, args, opts, callback) {
-  var args = args || [],
-      err = '',
+  var err = '',
       out = '';
+
+  if (args == null)
+    args = [];
 
   var child = child_process.spawn(cmd, args, opts);
 
@@ -233,10 +237,6 @@ function wrapper(cmds, opts, callback) {
     opts = {};
   }
 
-  if (typeof opts.safe === 'undefined') {
-    opts.safe = true;
-  }
-
   if (!callback) {
     callback = function() {};
   }
@@ -248,17 +248,20 @@ function wrapper(cmds, opts, callback) {
   // Iterate over list of cmds, calling each in order as long as all of them return without errors
   function iterate() {
     return exec(cmds[complete], opts, function(err, stdout, stderr, code) {
-      errBuf += stderr;
-      outBuf += stdout;
-
-      if (opts.safe && code !== 0) {
-        return callback(errBuf, outBuf, code);
+      if ((err != null) || (code !== 0)) {
+        return callback(err, outBuf, errBuf, code);
       }
+
+      if ((stderr != null) && (stderr !== ''))
+        errBuf += stderr;
+
+      if ((stdout != null) && (stdout !== ''))
+        outBuf += stdout;
 
       complete++;
 
       if (complete === cmds.length) {
-        callback(errBuf, outBuf, code);
+        callback(err, outBuf, errBuf, code);
       } else {
         iterate();
       }
