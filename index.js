@@ -1,5 +1,6 @@
 var child_process = require('child_process'),
     Stream = require('stream');
+var isWin = /^win/.test(process.platform);
 
 function parseShell(s) {
   if (!s) return;
@@ -60,7 +61,14 @@ function bufferedExec(cmd, args, opts, callback) {
 
   opts.stdio = [0, 'pipe', 'pipe']
 
-  var child = child_process.spawn(cmd, args, opts);
+  var child;
+  if(isWin) {
+    cmds = ['/s', '/c', '"'+cmd+'"'].concat(args);
+    opts.windowsVerbatimArguments = true;
+    child = child_process.spawn('cmd', cmds, opts);
+  } else {
+    child = child_process.spawn(cmd, args, opts);
+  }
 
   child.on('error', function(err) {
     err.cmd = cmd;
