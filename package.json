@@ -22,8 +22,13 @@
     "run",
     "child_process"
   ],
-  "author": "Zach Kelling <zk@monoid.io> (http://monoid.io)",
-  "license": "BSD",
+  "author": "Zach Kelling <zk@monoid.io> (http://zeekay.io)",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/zeekay/executive/blob/master/LICENSE"
+    }
+  ],
   "readmeFilename": "README.md",
   "devDependencies": {
     "chai": "~1.6.0",
