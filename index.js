@@ -194,10 +194,10 @@ function exec(args, opts, callback) {
         throw new Error('No command specified.');
     }
 
-    args = parseShell(args.join(' '));
-  }
-  // Here args should be an object.
-  else {
+    if (args.length) args = parseShell(args.join(' '));
+
+  } else {
+    // Here args should be an object.
     cmd = args.cmd;
 
     // Merge any specified env vars.
@@ -207,8 +207,7 @@ function exec(args, opts, callback) {
 
     if (args.args) {
       args = args.args;
-    }
-    else {
+    } else {
       args = [];
     }
   }
