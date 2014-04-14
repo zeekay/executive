@@ -1,6 +1,7 @@
 var child_process = require('child_process'),
-    isWin = /^win/.test(process.platform),
-    Stream = require('stream');
+    isWin         = /^win/.test(process.platform),
+    path          = require('path'),
+    Stream        = require('stream');
 
 function parseShell(s) {
   if (!s) return;
@@ -217,6 +218,7 @@ function exec(args, opts, callback) {
 
   // Hack to work around Windows oddities.
   if(isWin) {
+    cmd = path.normalize(cmd);
     args = ['/s', '/c', '"' + cmd + '"'].concat(args);
     cmd = 'cmd';
     opts.windowsVerbatimArguments = true;
