@@ -1,6 +1,6 @@
 {
   "name": "executive",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "Elegant command execution.",
   "main": "index.js",
   "scripts": {
