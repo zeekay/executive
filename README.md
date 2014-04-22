@@ -1,4 +1,4 @@
-# executive
+# executive [![Build Status](https://travis-ci.org/zeekay/executive.svg?branch=master)](https://travis-ci.org/zeekay/executive)
 
 An easy to use wrapper around `child_process.spawn`, useful for Cakefiles and the like. Pipes `stdout`, `stderr` and `stdin` so you don't have to. Think of it as a streaming `child_process.exec` with a few extra goodies.
 
