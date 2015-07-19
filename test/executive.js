@@ -66,8 +66,8 @@ describe('executive', function() {
       exec.parseShell('"in quotes" "in quotes again"').should.have.length.of(2);
     });
 
-    it.skip('should understand quoted long options', function() {
-      exec.parseShell('--long-arg="one two three"').should.contain('--long-arg="one two three"');
+    it('should understand quoted long options', function() {
+      exec.parseShell('--long-arg="one two three"').should.contain("--long-arg=\'one two three\'");
     });
   });
 });

@@ -1,22 +1,24 @@
-var child_process = require('child_process'),
+var childProcess = require('child_process'),
     isWin         = /^win/.test(process.platform),
     path          = require('path'),
-    Stream        = require('stream');
+    Stream        = require('stream'),
+    shellQuote    = require('shell-quote');
 
-function parseShell(s) {
-  if (!s) return;
+var parseShell = function(s) {
+  var args = shellQuote.parse(s);
+  for (var i=0; i<args.length; i++) {
+    var arg = args[i];
 
-  return s.match(/(['"])((\\\1|[^\1])*?)\1|(\\ |\S)+/g).map(function(s) {
-    if (/^'/.test(s)) {
-      return s.replace(/^'|'$/g, '')
-              .replace(/\\(["'\\$`(){}!#&*|])/g, '$1');
-    } else if (/^"/.test(s)) {
-      return s.replace(/^"|"$/g, '')
-              .replace(/\\(["'\\$`(){}!#&*|])/g, '$1');
-    } else {
-      return s.replace(/\\([ "'\\$`(){}!#&*|])/g, '$1');
+    // Only process env variables
+    if (arg.indexOf('=') == -1) {
+      continue
     }
-  });
+
+    // Ensure env variable is properly quoted
+    arg = arg.split('=', 2);
+    args[i] = arg[0] + '=' + shellQuote.quote([arg[1]])
+  }
+  return args;
 }
 
 function bufferedExec(cmd, args, opts, callback) {
@@ -27,7 +29,7 @@ function bufferedExec(cmd, args, opts, callback) {
     args = [];
 
   // stream to capture stdout
-  stdout = new Stream();
+  var stdout = new Stream();
   stdout.writable = true;
 
   stdout.write = function(data) {
@@ -44,7 +46,7 @@ function bufferedExec(cmd, args, opts, callback) {
   };
 
   // stream to capture stderr
-  stderr = new Stream();
+  var stderr = new Stream();
   stderr.writable = true;
 
   stderr.write = function(data) {
@@ -62,7 +64,7 @@ function bufferedExec(cmd, args, opts, callback) {
 
   opts.stdio = [0, 'pipe', 'pipe']
 
-  var child = child_process.spawn(cmd, args, opts);
+  var child = childProcess.spawn(cmd, args, opts);
 
   child.on('error', function(err) {
     err.cmd = cmd;
@@ -101,7 +103,7 @@ function bufferedExec(cmd, args, opts, callback) {
 function interactiveExec(cmd, args, opts, callback) {
   opts.stdio = 'inherit'
 
-  var child = child_process.spawn(cmd, args, opts);
+  var child = childProcess.spawn(cmd, args, opts);
 
   child.on('error', function(err) {
     err.cmd = cmd;
@@ -125,7 +127,7 @@ function quietExec(cmd, args, opts, callback) {
   if (args == null)
     args = [];
 
-  var child = child_process.spawn(cmd, args, opts);
+  var child = childProcess.spawn(cmd, args, opts);
 
   child.on('error', function(err) {
     err.cmd = cmd;
@@ -162,41 +164,25 @@ function quietExec(cmd, args, opts, callback) {
 }
 
 function exec(args, opts, callback) {
-  var env = {}, e, cmd, arg;
+  var env = {}, e, cmd;
 
   // Copy enviromental variables from process.env.
   for (e in process.env) env[e] = process.env[e];
 
   // If args is a string, parse it into cmd/args/env.
   if (typeof args === 'string') {
-    // Reverse arguments, javascript does not support lookbehind assertions so
-    // we'll use a lookahead assertion instead in our regex later.
-    args = args.split('').reverse().join('');
-    // Split on whitespace, respecting escaped spaces.
-    args = args.split(/\s+(?!\\)/g);
-    // Correct order of arguments.
-    args.reverse();
+    args = parseShell(args);
 
-    // Correct order of characters, removing escapes
-    for (var i=0; i<args.length; i++) {
-      args[i] = args[i].split('').reverse().join('').replace('\\ ', ' ');
-    }
+    while (cmd = args.shift()) {
+      // Check if this is an enviromental variable
+      if (cmd.indexOf('=') == -1) {
+        break;
+      }
 
-    // Parse out command and any enviromental variables
-    while ((cmd = args.shift()).indexOf('=') != -1) {
-      e = cmd.split('=');
-
-      if (e.length != 2)
-        throw new Error('Invalid enviromental variable specified.');
-
+      // Save env variable
+      e = cmd.split('=', 2);
       env[e[0]] = e[1];
-
-      if (args.length === 0)
-        throw new Error('No command specified.');
     }
-
-    if (args.length) args = parseShell(args.join(' '));
-
   } else {
     // Here args should be an object.
     cmd = args.cmd;
