@@ -4,23 +4,6 @@ var childProcess = require('child_process'),
     Stream        = require('stream'),
     shellQuote    = require('shell-quote');
 
-var parseShell = function(s) {
-  var args = shellQuote.parse(s);
-  for (var i=0; i<args.length; i++) {
-    var arg = args[i];
-
-    // Only process env variables
-    if (arg.indexOf('=') == -1) {
-      continue
-    }
-
-    // Ensure env variable is properly quoted
-    arg = arg.split('=', 2);
-    args[i] = arg[0] + '=' + shellQuote.quote([arg[1]])
-  }
-  return args;
-}
-
 function bufferedExec(cmd, args, opts, callback) {
   var err = '',
       out = '';
@@ -171,7 +154,7 @@ function exec(args, opts, callback) {
 
   // If args is a string, parse it into cmd/args/env.
   if (typeof args === 'string') {
-    args = parseShell(args);
+    args = shellQuote.parse(args);
 
     while (cmd = args.shift()) {
       // Check if this is an enviromental variable
@@ -304,6 +287,5 @@ wrapper.interactive = function(cmds, opts, callback) {
 wrapper.bufferedExec = bufferedExec;
 wrapper.quietExec = quietExec;
 wrapper.interactiveExec = interactiveExec;
-wrapper.parseShell = parseShell;
 
 module.exports = wrapper;
