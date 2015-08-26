@@ -4,6 +4,12 @@ var childProcess = require('child_process'),
     Stream        = require('stream'),
     shellQuote    = require('shell-quote');
 
+function error(err) {
+    if (err.code === 'ENOENT') {
+      console.error('ExecutiveError: ' + err.syscall + ' ' + err.code)
+    }
+}
+
 function bufferedExec(cmd, args, opts, callback) {
   var err = '',
       out = '';
@@ -51,6 +57,7 @@ function bufferedExec(cmd, args, opts, callback) {
 
   child.on('error', function(err) {
     err.cmd = cmd;
+    error(err)
     callback(err);
   })
 
@@ -90,6 +97,7 @@ function interactiveExec(cmd, args, opts, callback) {
 
   child.on('error', function(err) {
     err.cmd = cmd;
+    error(err)
     callback(err);
   })
 
@@ -114,6 +122,7 @@ function quietExec(cmd, args, opts, callback) {
 
   child.on('error', function(err) {
     err.cmd = cmd;
+    error(err)
     callback(err);
   })
 
