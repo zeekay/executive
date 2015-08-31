@@ -10,6 +10,14 @@ function error(err) {
     }
 }
 
+function spawn(cmd, args, opts) {
+  if (opts.sync) {
+    // need to mock out child like object
+    return childProcess.spawnSync(cmd, args, opts);
+  }
+  return childProcess.spawn(cmd, args, opts);
+}
+
 function bufferedExec(cmd, args, opts, callback) {
   var err = '',
       out = '';
@@ -53,7 +61,7 @@ function bufferedExec(cmd, args, opts, callback) {
 
   opts.stdio = [0, 'pipe', 'pipe']
 
-  var child = childProcess.spawn(cmd, args, opts);
+  var child = spawn(cmd, args, opts);
 
   child.on('error', function(err) {
     err.cmd = cmd;
@@ -93,7 +101,7 @@ function bufferedExec(cmd, args, opts, callback) {
 function interactiveExec(cmd, args, opts, callback) {
   opts.stdio = 'inherit'
 
-  var child = childProcess.spawn(cmd, args, opts);
+  var child = spawn(cmd, args, opts);
 
   child.on('error', function(err) {
     err.cmd = cmd;
@@ -118,7 +126,7 @@ function quietExec(cmd, args, opts, callback) {
   if (args == null)
     args = [];
 
-  var child = childProcess.spawn(cmd, args, opts);
+  var child = spawn(cmd, args, opts);
 
   child.on('error', function(err) {
     err.cmd = cmd;
@@ -292,6 +300,48 @@ wrapper.interactive = function(cmds, opts, callback) {
   opts.quiet = false;
   return wrapper(cmds, opts, callback);
 };
+
+wrapper.sync = function(cmds, opts, callback) {
+  if (typeof opts === 'function') {
+    callback = opts;
+    opts = {};
+  }
+
+  if (!opts) {
+    opts = {};
+  }
+
+  opts.sync = true;
+  return wrapper(cmds, opts, callback);
+}
+
+wrapper.quietSync = function(cmds, opts, callback) {
+  if (typeof opts === 'function') {
+    callback = opts;
+    opts = {};
+  }
+
+  if (!opts) {
+    opts = {};
+  }
+
+  opts.sync = true;
+  return wrapper.quiet(cmds, opts, callback);
+}
+
+wrapper.interactiveSync = function(cmds, opts, callback) {
+  if (typeof opts === 'function') {
+    callback = opts;
+    opts = {};
+  }
+
+  if (!opts) {
+    opts = {};
+  }
+
+  opts.sync = true;
+  return wrapper.interactive(cmds, opts, callback);
+}
 
 wrapper.bufferedExec = bufferedExec;
 wrapper.quietExec = quietExec;
