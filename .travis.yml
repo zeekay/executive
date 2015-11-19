@@ -1,10 +1,9 @@
 language: node_js
 node_js:
-  - 0.10
-  - 0.12
-  - iojs
-script: >
-  ./node_modules/.bin/mocha --reporter spec test
+  - 4
+  - 5
+script:
+  - ./node_modules/.bin/mocha --reporter spec test
 cache:
   directories:
     - node_modules
