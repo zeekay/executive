@@ -346,5 +346,6 @@ wrapper.interactiveSync = function(cmds, opts, callback) {
 wrapper.bufferedExec = bufferedExec;
 wrapper.quietExec = quietExec;
 wrapper.interactiveExec = interactiveExec;
+wrapper.version = require('./package').version;
 
 module.exports = wrapper;
