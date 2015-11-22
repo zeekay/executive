@@ -117,18 +117,24 @@ child.stdout.on('data', function(data) {
 ```
 
 It's especially nice to use in a Cakefile:
-```coffeescript
+```coffee
 exec = require 'executive'
 
 task 'package', 'Package project', ->
-  exec '''
-    mkdir -p dist
-    rm -rf dist/*
-    cp manifest.json dist
-    cp -rf assets dist
-    cp -rf lib dist
-    cp -rf views dist
-    zip -r package.zip dist
-    rm -rf dist
-  '''.split '\n'
+  yield exec '''
+    mkdir -p dist/
+    rm   -rf dist/*
+  '''
+
+  yield exec.parallel '''
+    cp manifest.json dist/
+    cp -rf assets/   dist/
+    cp -rf lib/      dist/
+    cp -rf views/    dist/
+  '''
+
+  yield exec '''
+    zip -r package.zip dist/
+    rm -rf dist/
+  '''
 ```
