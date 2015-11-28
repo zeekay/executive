@@ -35,6 +35,18 @@ module.exports = (cmds, opts, cb) ->
   if cb and isFunction cb
     return flow executor, cmds, opts, cb
 
+  # Blocking exec
+  if opts.sync
+    out = ''
+    err = ''
+    flow executor, cmds, opts, (err, stdout, stderr) ->
+      throw err if err?
+      out = stdout
+      err = stderr
+
+    return stdout: out, stderr: err
+
+
   # Promise API expected
   new Promise (resolve, reject) ->
     flow executor, cmds, opts, (err, stdout, stderr) ->
