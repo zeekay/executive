@@ -35,9 +35,15 @@ describe 'exec', ->
   describe 'interactive', ->
     it 'should not buffer stdout', ->
       {stdout} = yield exec.interactive 'bash -c "echo 1"'
+      stdout.should.eq ''
 
     it 'should not buffer stderr', ->
       try
         yield exec.interactive 'bash -c doesnotexist'
       catch err
       err.stderr.should.equal ''
+
+  describe 'sync', ->
+    it 'should execute command synchronously', ->
+      {stdout} = exec.sync 'bash -c "echo 1"'
+      stdout.should.eq '1\n'

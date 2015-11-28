@@ -1,7 +1,7 @@
 {spawnSync} = require 'child_process'
 
-parse       = require './parse'
-{error}     = require './utils'
+parse   = require './parse'
+logError = (require './utils').error
 
 module.exports = (cmd, opts, cb) ->
   [cmd, args, opts] = parse cmd, opts
@@ -22,10 +22,12 @@ module.exports = (cmd, opts, cb) ->
     process.stdout.write stdout
     process.stderr.write stderr
 
-  if err?
-    error err if err?
-    err.code   = status
-    err.signal = signal
-    err.pid    = pid
+  if error?
+    error.code   = status
+    error.signal = signal
+    error.pid    = pid
+    error.stdout = stdout
+    error.stderr = stderr
+    logError error if error?
 
-  cb err, stdout, stderr
+  cb error, stdout, stderr
