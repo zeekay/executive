@@ -16,6 +16,7 @@ partial = (defaults) ->
 wrapper = partial quiet: false, interactive: false, sync: false
 
 wrapper.interactive = partial interactive: true
+wrapper.parallel    = partial parallel:    true
 wrapper.quiet       = partial quiet:       true
 wrapper.sync        = partial sync:        true
 
