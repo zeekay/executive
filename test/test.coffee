@@ -45,5 +45,15 @@ describe 'exec', ->
 
   describe 'sync', ->
     it 'should execute command synchronously', ->
-      {stdout} = exec.sync 'bash -c "echo 1"'
+      {stdout, stderr} = exec.sync 'bash -c "echo 1"'
       stdout.should.eq '1\n'
+      stderr.should.eq ''
+
+  describe 'parallel', ->
+    it 'should execute commands in parallel', ->
+      {stdout} = yield exec.parallel '''
+      bash -c "sleep 1 && echo 1"
+      bash -c "echo 2"
+      bash -c "echo 3"
+      '''
+      stdout.should.eq '2\n3\n1\n'

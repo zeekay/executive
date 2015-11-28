@@ -14,7 +14,7 @@ exports.serial = (fn, cmds, opts, cb) ->
     else
       cb null, outAll, errAll)
 
-exports.parallel = (fn, cmds, cb) ->
+exports.parallel = (fn, cmds, opts, cb) ->
   outAll = ''
   errAll = ''
   done = 0
