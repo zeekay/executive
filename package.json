@@ -5,7 +5,7 @@
   "main": "lib/",
   "scripts": {
     "test": "cake test",
-    "prepublish": "cake build",
+    "prepublish": "cake build"
   },
   "homepage": "http://github.com/zeekay/executive",
   "bugs": {
