@@ -1,60 +1,69 @@
-# executive [![Build Status](https://travis-ci.org/zeekay/executive.svg?branch=master)](https://travis-ci.org/zeekay/executive)
+# executive [![Build Status](https://travis-ci.org/zeekay/executive.svg?branch=master)](https://travis-ci.org/zeekay/executive) [![npm version](https://badge.fury.io/js/executive.svg)](https://badge.fury.io/js/executive)
 
-An easy to use wrapper around `child_process.spawn`, useful for Cakefiles and the like. Pipes `stdout`, `stderr` and `stdin` so you don't have to. Think of it as a streaming `child_process.exec` with a few extra goodies.
+An elegant `child_process.spawn`/`child_process.spawnSync`. Automatically pipes
+`stderr` and `stdout` for you in a non-blocking fashion, making it very useful
+with build tools and task runners. Great async support, Node.js and Promises
+both supported. Easy serial and parallel command execution.
+
+## Features
+- Node.js callback, Promises and synchronous APIs.
+- Serial execution by default, parallel optional.
+- Automatically pipes `stderr` and `stdout` by default.
+- Streams `stderr` and `stdout` rather than blocking on command completion.
+- Automatically uses shell when command uses operators or globs.
+- New-line delimited strings are automatically executed sequentially.
+
+## Install
+```bash
+$ npm install executive
+```
 
 ## Usage
 
+No need to echo as `stderr` and `stdout` are piped by default.
+
 ```javascript
 var exec = require('executive');
 
-exec('ls', function(err, stdout, stderr) {
-    // Done, no need to echo out as it's piped to stdout by default.
-});
+exec('uglifyjs foo.js --compress --mangle > foo.min.js')
 ```
 
-Arguments are parsed out properly for you:
+It's easy to be quiet too.
 ```javascript
-var exec = require('executive');
-
-exec('ls -AGF Foo\\ bar', function(err, stdout, stderr) {
-    // Note the escaped folder name.
-});
+exec.quiet('uglifyjs foo.js --compress --mangle > foo.min.js')
 ```
 
-Also supports simple serial execution of commands:
+Callbacks and promises supported.
 ```javascript
-var exec = require('executive');
+exec.quiet('ls -l', function(err, stdout, stderr) {
+    var files = stdout.split('\n');
+})
 
+{stdout} = yield exec.quiet('ls -l')
+var files = stdout.split('\n');
+```
+
+Automatically serializes commands.
+
+```javascript
 exec(['ls', 'ls', 'ls'], function(err, stdout, stderr) {
     // All three ls commands are called in order.
 });
+
+exec(`
+ls
+ls
+ls`) // Same;
 ```
 
-In the case of a failure, no additional commands will be executed:
+Want to execute your commands in parallel? No problem.
 ```javascript
-exec(['ls', 'aaaaa', 'ls'], function(err, stdout, stderr) {
-    // First command succeeds, second blows up, third is never called.
-});
-```
-
-Commands can also be specified as a list of objects or a mix:
-```javascript
-exec([
-    {
-        cmd: 'ls',
-        args: [ '-la' ]
-    },
-    'ls -la',
-    {
-        cmd: 'ls',
-        args: [ '-l' ]
-    },
-])
+{stdout} = yield exec.parallel(['ls', 'ls', 'ls'])
 ```
 
 ## Options
-Options may be passed as the second argument to exec and in the case of `quiet`
-and `interactive` helper functions exist.
+Options are passed as the second argument to exec. Helper methods for
+`quiet`, `interactive`, `parallel` and `sync` do what you expect.
 
 ```javascript
 exec('ls', {options: quiet})
@@ -91,34 +100,27 @@ exec.quiet(['ls', 'ls'], function(err, stdout, stderr) {
 });
 ```
 
-#### options.safe
-##### default `true`
+#### options.sync | exec.sync
+##### default `false`
+Blocking version of exec. Returns `{stdout, stderr}` or throws an error.
 
-In case you need to ignore errors during serial execution it's possible to set
-`safe` to `false`:
+#### options.parallel | exec.parallel
+##### default `false`
+Uses parallel rather than serial execution of commands.
 
-```javascript
-exec(['ls', 'aaaaaa', 'ls'], {safe: false}, function(err, stdout, stderr) {
-    // Both commands execute despite aaaaaa not being a valid executable.
-});
-```
+#### options.shell
+##### default `null`
+Force a shell to be used for command execution.
+
 
 ## Extra credit
-The spawned child process object is accessible when you exec a single program
-(not available when using the simple serial execution wrapper):
+Great with `cake`, `grunt`, `gulp` and other task runners.
 
-```javascript
-var exec = require('executive');
+[Shortcake](http://github.com/zeekay/shortcake) (a superset of Cake) lets you
+take advantage of the Promise API to write synchronous looking async tasks:
 
-child = exec.quiet('ls');
-child.stdout.on('data', function(data) {
-    // Do your own thing
-});
-```
-
-It's especially nice to use in a Cakefile:
-```coffee
-exec = require 'executive'
+```coffeescript
+require 'shortcake'
 
 task 'package', 'Package project', ->
   yield exec '''
