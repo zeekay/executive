@@ -24,7 +24,6 @@ class BufferStream extends Stream
 
 module.exports = (cmd, opts, cb) ->
   [cmd, args, opts] = parse cmd, opts
-  console.log opts
 
   opts.stdio ?= [0, 'pipe', 'pipe']
 
