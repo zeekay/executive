@@ -85,7 +85,7 @@ about checking `stderr` and `stdout`, set `interactive` to `true`:
 
 ```javascript
 exec.interactive('vim', function(err) {
-    // Edit your commit message or whatnot
+    // Edit your commit message and whatnot
 });
 ```
 
@@ -95,7 +95,7 @@ exec.interactive('vim', function(err) {
 If you'd prefer not to pipe `stdin`, `stdout`, `stderr` set `quiet` to `false`:
 ```javascript
 exec.quiet(['ls', 'ls'], function(err, stdout, stderr) {
-    // Not a peep is heard, and both ls commands will be executed.
+    // You can still inspect stdout, stderr of course.
 });
 ```
 
@@ -113,10 +113,12 @@ Force a shell to be used for command execution.
 
 
 ## Extra credit
-Great with `cake`, `grunt`, `gulp` and other task runners.
+Great with `cake`, `grunt`, `gulp` and other task runners. Even better mixed
+with generator-based control flow libraries or `async`/`await`.
 
-[Shortcake](http://github.com/zeekay/shortcake) (a superset of Cake) lets you
-take advantage of the Promise API to write synchronous looking async tasks:
+Complex example using [`shortcake`](http://github.com/zeekay/shortcake) (which
+provides a superset of [cake](http://coffeescript.org)'s features, including
+generator/promise task support):
 
 ```coffeescript
 require 'shortcake'
