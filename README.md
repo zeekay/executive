@@ -142,4 +142,4 @@ task 'package', 'Package project', ->
   '''
 ```
 
-You can find examples of it's usage in the [tests](test) directory.
+You can find more usage examples in the [tests](test/test.coffee).
