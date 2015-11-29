@@ -1,5 +1,4 @@
 Stream    = require 'stream'
-readPkgUp = require 'read-pkg-up'
 {spawn}   = require 'child_process'
 
 parse = require './parse'
