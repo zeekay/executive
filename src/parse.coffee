@@ -3,21 +3,31 @@ shellQuote = require 'shell-quote'
 
 {isString, isWin} = require './utils'
 
-argsString = (s, env) ->
+# Check for any operators/glob patterns
+shellRequired = (args) ->
+  for arg in args
+    unless isString arg
+      return true
+  false
+
+argsString = (s, opts, env) ->
   args = shellQuote.parse s
 
+  # Parse out enviromental variables
   while cmd = args.shift()
-    # Check if this is an enviromental variable
-    break if cmd.indexOf('=') is -1
-
-    # Update env
+    break if (cmd.indexOf '=') is -1
     [k,v] = cmd.split '=', 2
-
     env[k] = v
+
+  # Check for any glob or operators
+  if opts.shell? or shellRequired args
+    console.log 'requiredShell'
+    cmd = opts.shell ? '/bin/sh'
+    args = ['-c', s]
 
   [cmd, args, env]
 
-argsObject = (obj, env) ->
+argsObject = (obj, opts, env) ->
   # Here args should be an object.
   cmd = obj.cmd
 
@@ -36,9 +46,9 @@ module.exports = (args, opts = {}) ->
 
   # If args is a string, parse it into cmd/args/env.
   if isString args
-    [cmd, args, env] = argsString args, env
+    [cmd, args, env] = argsString args, opts, env
   else
-    [cmd, args, env] = argsObject args, env
+    [cmd, args, env] = argsObject args, opts, env
 
   # Pass env to spawn
   opts.env = env

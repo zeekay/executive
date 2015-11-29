@@ -32,6 +32,10 @@ describe 'exec', ->
       stderr.should.contain 'command not found'
       done()
 
+  it 'should shell out if necessary', ->
+    {stdout} = yield exec 'echo foo | cat'
+    stdout.should.eq 'foo\n'
+
   describe 'interactive', ->
     it 'should not buffer stdout', ->
       {stdout} = yield exec.interactive 'bash -c "echo 1"'
@@ -57,3 +61,5 @@ describe 'exec', ->
       bash -c "echo 3"
       '''
       stdout.should.eq '2\n3\n1\n'
+
+
