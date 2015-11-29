@@ -42,10 +42,8 @@ describe 'exec', ->
       stdout.should.eq ''
 
     it 'should not buffer stderr', ->
-      try
-        yield exec.interactive 'bash -c doesnotexist'
-      catch err
-      err.stderr.should.equal ''
+      {stderr} = yield exec.interactive 'bash -c doesnotexist'
+      stderr.should.equal ''
 
   describe 'sync', ->
     it 'should execute command synchronously', ->
