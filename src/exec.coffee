@@ -26,16 +26,20 @@ class BufferStream extends Stream
 module.exports = (cmd, opts, cb) ->
   [cmd, args, opts] = parse cmd, opts
 
-  opts.stdio ?= [0, 'pipe', 'pipe']
-
   stderr = new BufferStream()
   stdout = new BufferStream()
 
-  child = spawn cmd, args, opts
+  child = spawn cmd, args,
+    cwd:      opts.cwd
+    env:      opts.env
+    stdio:    opts.stdio ? [0, 'pipe', 'pipe']
+    detached: opts.detached
+    uid:      opts.uid
+    gid:      opts.gid
 
   child.setMaxListeners 0
-  child.stdout.setEncoding 'utf8'
-  child.stderr.setEncoding 'utf8'
+  child.stdout.setEncoding opts.encoding ? 'utf8'
+  child.stderr.setEncoding opts.encoding ? 'utf8'
 
   # Buffer stderr, stdout
   unless opts.interactive
