@@ -93,7 +93,8 @@ exec.interactive('vim', function(err) {
 #### options.quiet | exec.quiet
 ##### default `false`
 
-If you'd prefer not to pipe `stdin`, `stdout`, `stderr` set `quiet` to `false`:
+If you'd prefer not to pipe `stdout` and `stderr` set `quiet` to `true`:
+
 ```javascript
 exec.quiet(['ls', 'ls'], function(err, stdout, stderr) {
     // You can still inspect stdout, stderr of course.
