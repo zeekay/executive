@@ -20,10 +20,10 @@ argsString = (s, opts, env) ->
     env[k] = v
 
   # Check for any glob or operators
-  if opts.shell? or shellRequired args
-    console.log 'requiredShell'
-    cmd = opts.shell ? '/bin/sh'
-    args = ['-c', s]
+  unless isWin
+    if opts.shell? or shellRequired args
+      cmd = opts.shell ? '/bin/sh'
+      args = ['-c', s]
 
   [cmd, args, env]
 
