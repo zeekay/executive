@@ -10,8 +10,6 @@ partial = (defaults) ->
 
     opts = Object.assign defaults, opts ? {}
 
-    console.log opts
-
     executive cmds, opts, cb
 
 # Defaults
