@@ -7,9 +7,6 @@ parse = require './parse'
 module.exports = (cmd, opts, cb) ->
   [cmd, args, opts] = parse cmd, opts
 
-  opts.stdio ?= [0, 'pipe', 'pipe']
-  opts.encoding ?= 'utf-8'
-
   {
     pid
     output
@@ -18,7 +15,19 @@ module.exports = (cmd, opts, cb) ->
     status
     signal
     error
-  } = spawnSync cmd, args, opts
+  } = spawnSync cmd, args,
+    cwd:        opts.cwd
+    input:      opts.input
+    stdio:      opts.stdio ? [0, 'pipe', 'pipe']
+    env:        opts.env
+    uid:        opts.uid
+    gid:        opts.gid
+    timeout:    opts.timeout
+    killSignal: opts.killSignal
+    maxBuffer:  opts.maxBuffer
+    encoding:   opts.encoding ? 'utf8'
+
+  opts
 
   unless opts.quiet
     process.stdout.write stdout
