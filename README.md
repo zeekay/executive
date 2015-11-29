@@ -53,12 +53,12 @@ exec(['ls', 'ls', 'ls'], function(err, stdout, stderr) {
 exec(`
 ls
 ls
-ls`) // Same;
+ls`) // Same
 ```
 
 Want to execute your commands in parallel? No problem.
 ```javascript
-{stdout} = yield exec.parallel(['ls', 'ls', 'ls'])
+exec.parallel(['ls', 'ls', 'ls'])
 ```
 
 ## Options
@@ -115,7 +115,7 @@ Force a shell to be used for command execution.
 
 ## Extra
 Great with `cake`, `grunt`, `gulp` and other task runners. Even better mixed
-with generator-based control flow libraries or `async`/`await`.
+with generator-based control flow libraries and/or ES7 `async`/`await`.
 
 Complex example using [`shortcake`](http://github.com/zeekay/shortcake) (which
 provides a superset of [Cake](http://coffeescript.org)'s features, including
