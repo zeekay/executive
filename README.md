@@ -5,7 +5,7 @@ you in a non-blocking fashion, making it very useful with build tools and task
 runners. Great async support with easy serial and parallel command execution.
 
 ## Features
-- Node.js callback, Promises and synchronous APIs.
+- Node.js callback, promise and synchronous APIs.
 - Serial execution by default, parallel optional.
 - Automatically pipes `stderr` and `stdout` by default.
 - Streams `stderr` and `stdout` rather than blocking on command completion.
@@ -32,14 +32,15 @@ It's easy to be quiet too.
 exec.quiet('uglifyjs foo.js --compress --mangle > foo.min.js')
 ```
 
-Callbacks and promises supported.
+Callbacks and promises are both supported.
 ```javascript
 exec.quiet('ls -l', function(err, stdout, stderr) {
     var files = stdout.split('\n');
 })
 
-{stdout} = yield exec.quiet('ls -l')
-var files = stdout.split('\n');
+exec.quiet('ls -l').then(function(res) {
+    var files = res.stdout.split('\n');
+})
 ```
 
 Automatically serializes commands.
@@ -118,7 +119,7 @@ with generator-based control flow libraries or `async`/`await`.
 
 Complex example using [`shortcake`](http://github.com/zeekay/shortcake) (which
 provides a superset of [Cake](http://coffeescript.org)'s features, including
-generator/promise task support):
+generator/promise support):
 
 ```coffeescript
 require 'shortcake'
