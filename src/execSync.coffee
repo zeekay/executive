@@ -6,7 +6,7 @@ logError = (require './utils').error
 module.exports = (cmd, opts, cb) ->
   [cmd, args, opts] = parse cmd, opts
 
-  opts.stdio = [0, 'pipe', 'pipe']
+  opts.stdio ?= [0, 'pipe', 'pipe']
 
   {
     pid

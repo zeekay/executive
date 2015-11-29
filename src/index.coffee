@@ -8,7 +8,9 @@ partial = (defaults) ->
     if isFunction opts
       [cb, opts] = [opts, {}]
 
-    opts = Object.assign defaults, {} ? opts
+    opts = Object.assign defaults, opts ? {}
+
+    console.log opts
 
     executive cmds, opts, cb
 
