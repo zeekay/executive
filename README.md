@@ -117,7 +117,7 @@ Great with `cake`, `grunt`, `gulp` and other task runners. Even better mixed
 with generator-based control flow libraries or `async`/`await`.
 
 Complex example using [`shortcake`](http://github.com/zeekay/shortcake) (which
-provides a superset of [cake](http://coffeescript.org)'s features, including
+provides a superset of [Cake](http://coffeescript.org)'s features, including
 generator/promise task support):
 
 ```coffeescript
