@@ -112,7 +112,7 @@ Uses parallel rather than serial execution of commands.
 Force a shell to be used for command execution.
 
 
-## Extra credit
+## Extra
 Great with `cake`, `grunt`, `gulp` and other task runners. Even better mixed
 with generator-based control flow libraries or `async`/`await`.
 
@@ -141,3 +141,5 @@ task 'package', 'Package project', ->
     rm -rf dist/
   '''
 ```
+
+You can find examples of it's usage in the [tests](test) directory.
