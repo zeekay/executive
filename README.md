@@ -113,6 +113,14 @@ Uses parallel rather than serial execution of commands.
 ##### default `null`
 Force a shell to be used for command execution.
 
+#### options.strict
+##### default `false`
+Any non-zero exit status is treated as an error. Promises will be rejected and
+an error will be thrown with `exec.sync` if `syncThrows` is enabled.
+
+#### options.syncThrows
+##### default `false`
+Will cause `exec.sync` to throw errors rather than returning them.
 
 ## Extra
 Great with `cake`, `grunt`, `gulp` and other task runners. Even better mixed

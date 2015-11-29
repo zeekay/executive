@@ -1,8 +1,9 @@
-Stream  = require 'stream'
-{spawn} = require 'child_process'
+Stream    = require 'stream'
+readPkgUp = require 'read-pkg-up'
+{spawn}   = require 'child_process'
 
-parse   = require './parse'
-{error} = require './utils'
+parse = require './parse'
+{logError, once} = require './utils'
 
 class BufferStream extends Stream
   constructor: ->
@@ -46,30 +47,35 @@ module.exports = (cmd, opts, cb) ->
     child.stdout.pipe process.stdout
     child.stderr.pipe process.stderr
 
-  done = (err) ->
-    if err?
-      err.stderr = stderr.toString()
-      err.stdout = stdout.toString()
-      error err
-
-    child.kill()
-    stderr.destroy()
+  done = once (err, status) ->
     stdout.destroy()
+    stderr.destroy()
+    child.kill()
 
-    cb err, stdout.toString(), stderr.toString()
+    stdout = stdout.toString()
+    stderr = stderr.toString()
 
-  child.on 'error', (err) ->
-    err.cmd = cmd
-    done err
+    if err?
+      err.cmd    = cmd
+      err.args   = args
+      err.stdout = stdout
+      err.stderr = stderr
+      err.status = status
+      logError err unless opts.quiet
 
-  child.on 'close', (code) ->
+    cb err, stdout, stderr, status
+
+  exit = once (status, signal) ->
     err = null
 
-    unless code is 0
-      err = new Error "#{cmd} exited with code #{code}"
-      err.cmd  = "#{cmd} #{args.join ''}"
-      err.code = code
+    unless status is 0
+      err = new Error "Command failed, '#{cmd}' exited with status #{status}"
+      err.signal = signal
 
-    done err
+    done err, status
+
+  child.on 'close', exit
+  child.on 'exit',  exit
+  child.on 'error', done
 
   child

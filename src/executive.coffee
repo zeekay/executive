@@ -39,19 +39,24 @@ module.exports = (cmds, opts, cb) ->
   if opts.sync
     out = ''
     err = ''
-    flow executor, cmds, opts, (err, stdout, stderr) ->
-      throw err if err?
-      out = stdout
-      err = stderr
 
-    return stdout: out, stderr: err
+    return flow executor, cmds, opts, (err, stdout, stderr, status) ->
+      return unless opts.syncThrows
 
+      if opts.strict and status != 0
+        throw err
+      else if err? and not status?
+        throw err
 
   # Promise API expected
   new Promise (resolve, reject) ->
-    flow executor, cmds, opts, (err, stdout, stderr) ->
-      return reject err if err?
+    flow executor, cmds, opts, (err, stdout, stderr, status) ->
+      if opts.strict and status != 0
+        return reject err
+      else if err? and not status?
+        return reject err
 
       resolve
         stdout: stdout
         stderr: stderr
+        status: status
