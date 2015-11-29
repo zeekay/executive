@@ -34,11 +34,11 @@ exec.quiet('uglifyjs foo.js --compress --mangle > foo.min.js')
 
 Callbacks and promises are both supported.
 ```javascript
-exec.quiet('ls -l', function(err, stdout, stderr) {
+exec('ls -l', function(err, stdout, stderr) {
     var files = stdout.split('\n');
 })
 
-exec.quiet('ls -l').then(function(res) {
+exec('ls -l').then(function(res) {
     var files = res.stdout.split('\n');
 })
 ```
@@ -86,7 +86,7 @@ about checking `stderr` and `stdout`, set `interactive` to `true`:
 
 ```javascript
 exec.interactive('vim', function(err) {
-    // Edit your commit message and whatnot
+    // Edit your commit message
 });
 ```
 
