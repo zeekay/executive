@@ -1,9 +1,8 @@
 # executive [![Build Status](https://travis-ci.org/zeekay/executive.svg?branch=master)](https://travis-ci.org/zeekay/executive) [![npm version](https://badge.fury.io/js/executive.svg)](https://badge.fury.io/js/executive)
 
-An elegant `child_process.spawn`/`child_process.spawnSync`. Automatically pipes
-`stderr` and `stdout` for you in a non-blocking fashion, making it very useful
-with build tools and task runners. Great async support, Node.js and Promises
-both supported. Easy serial and parallel command execution.
+An elegant `child_process.spawn`. Automatically pipes `stderr` and `stdout` for
+you in a non-blocking fashion, making it very useful with build tools and task
+runners. Great async support with easy serial and parallel command execution.
 
 ## Features
 - Node.js callback, Promises and synchronous APIs.
