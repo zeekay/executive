@@ -32,9 +32,7 @@ argsObject = (obj, opts, env) ->
   cmd = obj.cmd
 
   # Merge any specified env vars.
-  if obj.env
-    for k,v of obj.env
-      env[k] = v
+  env = Object.assign env, obj.env ? {}
 
   args = obj.args ? []
 
