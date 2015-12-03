@@ -77,8 +77,10 @@ module.exports = (cmd, opts, cb) ->
 
     done err, status
 
+  # Close fires after exit so we are relying on it for now.
   child.on 'close', exit
-  child.on 'exit',  exit
+  # child.on 'exit', exit
+
   child.on 'error', done
 
   child
