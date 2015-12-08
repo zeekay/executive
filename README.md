@@ -1,5 +1,7 @@
 # executive [![Build Status](https://travis-ci.org/zeekay/executive.svg?branch=master)](https://travis-ci.org/zeekay/executive) [![npm version](https://badge.fury.io/js/executive.svg)](https://badge.fury.io/js/executive)
 
+[![Join the chat at https://gitter.im/zeekay/executive](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/zeekay/executive?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 An elegant `child_process.spawn`. Automatically pipes `stderr` and `stdout` for
 you in a non-blocking fashion, making it very useful with build tools and task
 runners. Great async support with easy serial and parallel command execution.
