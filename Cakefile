@@ -1,7 +1,7 @@
 require 'shortcake'
 
-require 'cake-version'
-require 'cake-publish'
+use require 'cake-version'
+use require 'cake-publish'
 
 option '-g', '--grep [filter]', 'test filter'
 option '-t', '--test',          'test specific module'
