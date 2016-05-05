@@ -7,7 +7,7 @@ execSync = require './execSync'
 module.exports = (cmds, opts, cb) ->
   # Split string of commands
   if isString cmds
-    cmds = cmds.split '\n'
+    cmds = (cmds.split '\n').filter (c) -> c != ''
 
   # We also work with an array of commands
   unless isArray cmds

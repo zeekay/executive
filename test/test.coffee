@@ -22,6 +22,15 @@ describe 'exec', ->
     '''
     stdout.should.eq '1\n2\n3\n'
 
+  it 'should split commands on multiple lines with spaces', ->
+    {stdout} = yield exec.quiet '''
+    bash -c "echo 1"
+    bash -c "echo 2"
+
+    bash -c "echo 3"
+    '''
+    stdout.should.eq '1\n2\n3\n'
+
   it 'should buffer all stdout', (done) ->
     exec.quiet 'bash -c "echo 1"', (err, stdout, stderr) ->
       stdout.should.eq '1\n'
