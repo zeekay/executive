@@ -1,3 +1,4 @@
+fs         = require 'fs'
 path       = require 'path'
 shellQuote = require 'shell-quote'
 
@@ -51,9 +52,14 @@ module.exports = (args, opts = {}) ->
   # Pass env to spawn
   opts.env = env
 
-  # Hack to work around Windows oddities.
+  # Hacks to work around Windows oddities.
   if isWin
-    cmd = path.normalize(cmd)
+    # Normalize path for Windows
+    cmd = path.normalize cmd
+    # Check for a .cmd version and use it if it exists
+    if fs.existsSync cmd_ = cmd + '.cmd'
+      cmd = cmd_
+    # Setup arguments for cmd.exe and use that as executable
     args = ['/s', '/c', "\"#{cmd}\""].concat args
     cmd = 'cmd'
     opts.windowsVerbatimArguments = true
