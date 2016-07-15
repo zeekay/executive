@@ -56,12 +56,13 @@ module.exports = (args, opts = {}) ->
   if isWin
     # Normalize path for Windows
     cmd = path.normalize cmd
+
     # Check for a .cmd version and use it if it exists
     if fs.existsSync cmd_ = cmd + '.cmd'
       cmd = cmd_
+
     # Setup arguments for cmd.exe and use that as executable
-    args = ['/s', '/c', "\"#{cmd}\""].concat args
-    cmd = 'cmd'
-    opts.windowsVerbatimArguments = true
+    args = ['/c', cmd].concat args
+    cmd = 'cmd.exe'
 
   [cmd, args, opts]
