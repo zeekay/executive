@@ -56,6 +56,20 @@ describe 'exec', ->
       p = exec.quiet 'bash -c doesnotexist', strict: true
       yield p.should.be.rejectedWith Error
 
+    it 'should continue processing, when strict mode is implicitly disabled, after a non-zero exit code', ->
+      {stdout, stderr} = yield exec ['bash -c "exit 1"', "echo -n 'It worked'"]
+      stdout.should.eq 'It worked'
+      stderr.should.eq ''
+
+    it 'should continue processing, when strict mode is explicitly disabled, after a non-zero exit code', ->
+      {stdout, stderr} = yield exec ['bash -c "exit 1"', "echo -n 'It worked'"], { strict:false }
+      stdout.should.eq 'It worked'
+      stderr.should.eq ''
+
+    it 'should not continue processing when strict mode is enabled after a non-zero exit code', ->
+      p = exec ['bash -c "exit 1"', "echo -n 'It worked'"], { strict:true }
+      yield p.should.be.rejectedWith Error
+
   describe 'interactive', ->
     it 'should not buffer output', ->
       {stdout, stderr} = yield exec.interactive 'bash -c "echo 1"'

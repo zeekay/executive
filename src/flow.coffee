@@ -10,7 +10,7 @@ exports.serial = (fn, cmds, opts, cb) ->
         errAll += stderr
         lastStatus = status
 
-        return (cb err, outAll, errAll, lastStatus) if err?
+        return (cb err, outAll, errAll, lastStatus) if opts.strict && err?
 
         next()
     else
