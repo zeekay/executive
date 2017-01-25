@@ -1,5 +1,7 @@
 # executive [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![NPM version][npm-image]][npm-url]  [![Gitter chat][gitter-image]][gitter-url]
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/zeekay/executive.svg)](https://greenkeeper.io/)
+
 An elegant `child_process.spawn`. Automatically pipes `stderr` and `stdout` for
 you in a non-blocking fashion, making it very useful with build tools and task
 runners. Great async support with easy serial and parallel command execution.
