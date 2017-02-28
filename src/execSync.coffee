@@ -33,7 +33,7 @@ module.exports = (cmd, opts, cb) ->
     process.stdout.write stdout
     process.stderr.write stderr
 
-  unless error? or status != 0
+  if not error? and status != 0
     error = new Error "Command failed, '#{cmd}' exited with status #{status}"
 
   if error?
