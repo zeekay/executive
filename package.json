@@ -36,7 +36,7 @@
     "coffee-script": "^1.10.0",
     "mocha": "^3.2.0",
     "postmortem": "^0.2.3",
-    "shortcake": "1.1.19",
+    "shortcake": "1.1.20",
     "vigil": "^0.6.1"
   },
   "dependencies": {
