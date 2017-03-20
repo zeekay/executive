@@ -1,48 +1,117 @@
-import {isString, isPromise} from 'es-is'
+import {isFunction, isPromise, isString} from 'es-is'
 
 export serial = (fn, cmds, opts, cb) ->
   errAll     = ''
   outAll     = ''
   lastStatus = null
 
-  do (next = ->
-    if cmds.length
-      cmd = cmds.shift()
-      if isString cmd
-        fn cmd, opts, (err, stdout, stderr, status) ->
-          outAll    += stdout
-          errAll    += stderr
-          lastStatus = status
+  append = ({stdout, stderr, status}) ->
+    if stdout?
+      outAll += stdout
+    if stderr?
+      errAll += stderr
 
-          if opts.strict && err?
-            cb err, outAll, errAll, lastStatus
-          else
-            next()
-      else if isPromise
-        cmd.then  (val) ->  next()
-           .catch (err) ->  cb err, outAll, errAll, 1
-      else
-        return cb new Error "Not a valid command: #{cmd.toString()}"
+    if status?
+      lastStatus = status
+    else
+      lastStatus = 0
+
+  do next = ->
+    unless cmds.length
+      return cb null, outAll, errAll, lastStatus
+
+    cmd = cmds.shift()
+
+    if isString cmd
+      fn cmd, opts, (err, stdout, stderr, status) ->
+        outAll    += stdout
+        errAll    += stderr
+        lastStatus = status
+
+        if opts.strict and err?
+          cb err, outAll, errAll, lastStatus
+        else
+          next()
+
+    else if isPromise cmd
+      cmd
+        .then (val) ->
+          append val
+          next()
+        .catch (err) ->
+          cb err, outAll, errAll, 1
+
+    else if isFunction cmd
+      try
+        val = cmd()
+        if isPromise val
+          cmds.unshift val
+        else
+          append val
+        next()
+      catch err
+        cb err, outAll, errAll, 1
 
     else
-      cb null, outAll, errAll, lastStatus)
+      cb new Error "Not a valid command: #{cmd.toString()}"
 
 export parallel = (fn, cmds, opts, cb) ->
   outAll = ''
   errAll = ''
-  done   = 0
+  errors = []
+  todo   = cmds.length
 
-  next = (status = 0) ->
-    if ++done == cmds.length
-        cb null, outAll, errAll, status
+  append = ({stdout, stderr, status}) ->
+    if stdout?
+      outAll += stdout
+    if stderr?
+      errAll += stderr
 
-  for cmd in cmds
+    if status?
+      status
+    else
+      0
+
+  done = (err, status = 0) ->
+    if err?
+      unless opts.quiet
+        console.error err
+        console.error err.stack
+      errors.push err
+
+    return if --todo
+
+    if errors.length
+      err = new Error 'Partial completion'
+      err.errors = errors
+      status = 1
+
+    cb err, outAll, errAll, status
+
+  while cmds.length
+    cmd = cmds.shift()
+
     if isString cmd
       fn cmd, opts, (err, stdout, stderr, status) ->
-        outAll += stdout
-        errAll += stderr
+        append stdout: stdout, stderr: stderr
+        done err, status
+    else if isFunction cmd
+      try
+        val = cmd()
+        if isPromise val
+          cmds.push val
+        else
+          append val
+          done null, 0
+      catch err
+        done err
 
-        next status
-    else if isPromise
-      cmd.then  (val) -> next 0
-         .catch (err) -> (console.error err) and next 1
+    else if isPromise cmd
+      cmd
+        .then  (val) ->
+          append val
+          done null, 0
+        .catch (err) ->
+          done err
+
+  return
