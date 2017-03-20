@@ -1,4 +1,4 @@
-exports.serial = (fn, cmds, opts, cb) ->
+export serial = (fn, cmds, opts, cb) ->
   outAll = ''
   errAll = ''
   lastStatus = null
@@ -16,7 +16,7 @@ exports.serial = (fn, cmds, opts, cb) ->
     else
       cb null, outAll, errAll, lastStatus)
 
-exports.parallel = (fn, cmds, opts, cb) ->
+export parallel = (fn, cmds, opts, cb) ->
   outAll = ''
   errAll = ''
   done = 0

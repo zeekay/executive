@@ -1,13 +1,16 @@
 require 'shortcake'
 
-use require 'cake-version'
+use require 'cake-bundle'
+use require 'cake-outdated'
 use require 'cake-publish'
+use require 'cake-version'
 
 option '-g', '--grep [filter]', 'test filter'
 option '-t', '--test',          'test specific module'
 
 task 'build', 'build project', ->
-  yield exec 'node_modules/.bin/coffee -bcm -o lib/ src/'
+  bundle.write
+    entry: './src/index.coffee'
 
 task 'test', 'run tests', (opts, done) ->
   grep = if opts.grep then "--grep #{opts.grep}" else ''
@@ -37,12 +40,3 @@ task 'watch:test', 'watch for changes and rebuild, rerun tests', (options) ->
 
     if /^test/.test filename
       invoke 'test', test: filename
-
-task 'publish', 'Publish project', ->
-  # require('brief').update()
-
-  exec.parallel '''
-    git push
-    git push --tags
-    npm publish
-    '''

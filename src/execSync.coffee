@@ -1,10 +1,9 @@
-{spawnSync} = require 'child_process'
+import {spawnSync} from 'child_process'
 
-parse = require './parse'
+import parse      from './parse'
+import {logError} from './utils'
 
-{logError} = require './utils'
-
-module.exports = (cmd, opts, cb) ->
+export default (cmd, opts, cb) ->
   [cmd, args, opts] = parse cmd, opts
 
   {

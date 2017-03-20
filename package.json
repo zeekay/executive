@@ -2,7 +2,8 @@
   "name": "executive",
   "version": "1.1.9",
   "description": "Elegant command execution.",
-  "main": "lib/",
+  "main": "dist/lib.js",
+  "module": "dist/lib.mjs",
   "scripts": {
     "test": "cake test",
     "prepublish": "cake build"
@@ -28,12 +29,15 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
+    "cake-bundle": "0.1.8",
+    "cake-outdated": "0.1.9",
     "cake-publish": "0.1.5",
     "cake-version": "0.1.9",
     "chai": "^3.4.1",
     "chai-as-promised": "^6.0.0",
     "co-mocha": "^1.1.2",
     "coffee-script": "^1.10.0",
+    "es-is": "3.2.1",
     "mocha": "^3.2.0",
     "postmortem": "^0.2.3",
     "shortcake": "1.1.20",

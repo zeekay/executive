@@ -1,6 +1,6 @@
-executive = require './executive'
+import {isFunction} from 'es-is'
 
-{isFunction} = require './utils'
+import executive    from './executive'
 
 # Setup defaults for various shortcut helpers
 partial = (defaults) ->
@@ -8,7 +8,7 @@ partial = (defaults) ->
     if isFunction opts
       [cb, opts] = [opts, {}]
 
-    opts = Object.assign defaults, opts ? {}
+    opts = Object.assign {}, defaults, opts ? {}
 
     executive cmds, opts, cb
 
@@ -20,4 +20,4 @@ wrapper.parallel    = partial parallel:    true
 wrapper.quiet       = partial quiet:       true
 wrapper.sync        = partial sync:        true
 
-module.exports = wrapper
+export default wrapper
