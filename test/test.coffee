@@ -46,12 +46,15 @@ describe 'exec', ->
     stdout.should.eq 'foo\n'
 
   it 'should execute functions and promises as commands', ->
+    val = null
     {stdout, stderr} = yield exec.serial [
-      'bash -c "sleep 1 && echo 1"'
+      -> val = 1
+      -> "bash -c 'sleep 1 && echo #{val}'"
       -> exec 'bash -c "echo 2"'
-      -> 'bash -c "echo 3"'
+      'bash -c "echo 3"'
+      -> {stdout: 4}
     ]
-    stdout.should.eq '1\n2\n3\n'
+    stdout.should.eq '1\n2\n3\n4'
     stderr.should.eq ''
 
   describe 'promises', ->
@@ -107,9 +110,12 @@ describe 'exec', ->
 
     it 'should execute commands in parallel, including functions and promises', ->
       {stdout, stderr} = yield exec.parallel [
-        'bash -c "sleep 1 && echo 1"'
+        -> "bash -c 'sleep 1 && echo 1'"
         -> exec 'bash -c "echo 2"'
         'bash -c "echo 3"'
+        -> console.log 'ignored'
       ]
-      stdout.should.eq '2\n3\n1\n'
+      lines = (x.trim() for x in stdout.trim().split '\n')
+      lines.sort()
+      lines.should.eql ['1', '2', '3']
       stderr.should.eq ''

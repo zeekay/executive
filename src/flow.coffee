@@ -5,7 +5,9 @@ export serial = (fn, cmds, opts, cb) ->
   outAll     = ''
   lastStatus = null
 
-  append = ({stdout, stderr, status}) ->
+  append = (res = {}) ->
+    {stdout, stderr, status} = res
+
     if stdout?
       outAll += stdout
     if stderr?
@@ -44,9 +46,7 @@ export serial = (fn, cmds, opts, cb) ->
     else if isFunction cmd
       try
         val = cmd()
-        if isPromise val
-          cmds.unshift val
-        else if isString val
+        if (isPromise val) or (isString val)
           cmds.unshift val
         else
           append val
@@ -63,7 +63,9 @@ export parallel = (fn, cmds, opts, cb) ->
   errors = []
   todo   = cmds.length
 
-  append = ({stdout, stderr, status}) ->
+  append = (res = {}) ->
+    {stdout, stderr, status} = res
+
     if stdout?
       outAll += stdout
     if stderr?
