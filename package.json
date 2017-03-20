@@ -1,6 +1,6 @@
 {
   "name": "executive",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "description": "Elegant command execution.",
   "main": "dist/lib.js",
   "module": "dist/lib.mjs",
