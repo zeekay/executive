@@ -46,6 +46,8 @@ export serial = (fn, cmds, opts, cb) ->
         val = cmd()
         if isPromise val
           cmds.unshift val
+        else if isString val
+          cmds.unshift val
         else
           append val
         next()
@@ -99,6 +101,8 @@ export parallel = (fn, cmds, opts, cb) ->
       try
         val = cmd()
         if isPromise val
+          cmds.push val
+        else if isString val
           cmds.push val
         else
           append val
