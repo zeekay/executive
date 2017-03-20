@@ -45,6 +45,15 @@ describe 'exec', ->
     {stdout} = yield exec 'echo foo | cat'
     stdout.should.eq 'foo\n'
 
+  it 'should execute functions and promises as commands', ->
+    {stdout, stderr} = yield exec.serial [
+      'bash -c "sleep 1 && echo 1"'
+      -> exec 'bash -c "echo 2"'
+      'bash -c "echo 3"'
+    ]
+    stdout.should.eq '1\n2\n3\n'
+    stderr.should.eq ''
+
   describe 'promises', ->
     it 'should not reject non-zero status', ->
       {stdout, stderr, status} = yield exec.quiet 'bash -c doesnotexist'
@@ -93,5 +102,14 @@ describe 'exec', ->
       bash -c "echo 2"
       bash -c "echo 3"
       '''
+      stdout.should.eq '2\n3\n1\n'
+      stderr.should.eq ''
+
+    it 'should execute commands in parallel, including functions and promises', ->
+      {stdout, stderr} = yield exec.parallel [
+        'bash -c "sleep 1 && echo 1"'
+        -> exec 'bash -c "echo 2"'
+        'bash -c "echo 3"'
+      ]
       stdout.should.eq '2\n3\n1\n'
       stderr.should.eq ''
