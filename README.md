@@ -75,6 +75,12 @@ exec.parallel([
     // Promises returned by functions are automatically consumed
     function() { return exec('ls') }),
 
+    // Functions which return a string are assumed to be commands
+    function() { return 'ls' },
+
+    // Functions and promises can return objects with stdout, stderr or status
+    function() { return {stdout: 'huzzah', stderr: '', status: 0} },
+
     'ls'
 ])
 
