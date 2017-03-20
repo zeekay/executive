@@ -49,7 +49,7 @@ describe 'exec', ->
     {stdout, stderr} = yield exec.serial [
       'bash -c "sleep 1 && echo 1"'
       -> exec 'bash -c "echo 2"'
-      'bash -c "echo 3"'
+      -> 'bash -c "echo 3"'
     ]
     stdout.should.eq '1\n2\n3\n'
     stderr.should.eq ''
