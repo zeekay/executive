@@ -4,15 +4,16 @@
 
 An elegant `child_process.spawn`. Automatically pipes `stderr` and `stdout` for
 you in a non-blocking fashion, making it very useful with build tools and task
-runners. Great async support with easy serial and parallel command execution.
+runners. Great async support with built-in serial and parallel command execution.
 
 ## Features
-- Node.js callback, promise and synchronous APIs.
-- Serial execution by default, parallel optional.
+- Promise, Errback, and Synchronous APIs.
+- Serial execution by default with parallel execution optional.
 - Automatically pipes `stderr` and `stdout` by default.
 - Streams `stderr` and `stdout` rather than blocking on command completion.
-- Automatically uses shell when command uses operators or globs.
+- Automatically uses shell when commands use operators or globs.
 - New-line delimited strings are automatically executed sequentially.
+- Easily blend commands, pure functions and promises with built-in control flow.
 
 ## Install
 ```bash
@@ -36,11 +37,11 @@ exec.quiet('uglifyjs foo.js --compress --mangle > foo.min.js')
 
 Callbacks and promises are both supported.
 ```javascript
-exec('ls -l', function(err, stdout, stderr) {
+exec('ls -l', (err, stdout, stderr) => {
     var files = stdout.split('\n');
 })
 
-exec('ls -l').then(function(res) {
+exec('ls -l').then(res => {
     var files = res.stdout.split('\n');
 })
 ```
@@ -48,7 +49,7 @@ exec('ls -l').then(function(res) {
 Automatically serializes commands.
 
 ```javascript
-exec(['ls', 'ls', 'ls'], function(err, stdout, stderr) {
+exec(['ls', 'ls', 'ls'], (err, stdout, stderr) => {
     // All three ls commands are called in order.
 });
 
@@ -61,6 +62,22 @@ ls`) // Same
 Want to execute your commands in parallel? No problem.
 ```javascript
 exec.parallel(['ls', 'ls', 'ls'])
+```
+
+Want to blend in Promises or pure functions? No problem.
+```javascript
+exec.parallel([
+    'ls',
+
+    // Promises can be blended directly in.
+    exec('ls'),
+
+    // Promises returned by functions are automatically consumed
+    function() { return exec('ls') }),
+
+    'ls'
+])
+
 ```
 
 ## Options
@@ -136,19 +153,19 @@ generator/promise support):
 require 'shortcake'
 
 task 'package', 'Package project', ->
-  yield exec '''
+  await exec '''
     mkdir -p dist/
     rm   -rf dist/*
   '''
 
-  yield exec.parallel '''
+  await exec.parallel '''
     cp manifest.json dist/
     cp -rf assets/   dist/
     cp -rf lib/      dist/
     cp -rf views/    dist/
   '''
 
-  yield exec '''
+  await exec '''
     zip -r package.zip dist/
     rm -rf dist/
   '''
