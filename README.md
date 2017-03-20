@@ -104,7 +104,7 @@ or watch the output of a long running process (`tail -f`), or just don't care
 about checking `stderr` and `stdout`, set `interactive` to `true`:
 
 ```javascript
-exec.interactive('vim', function(err) {
+exec.interactive('vim', err => {
     // Edit your commit message
 });
 ```
@@ -115,7 +115,7 @@ exec.interactive('vim', function(err) {
 If you'd prefer not to pipe `stdout` and `stderr` set `quiet` to `true`:
 
 ```javascript
-exec.quiet(['ls', 'ls'], function(err, stdout, stderr) {
+exec.quiet(['ls', 'ls'], (err, stdout, stderr) => {
     // You can still inspect stdout, stderr of course.
 });
 ```
