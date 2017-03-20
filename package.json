@@ -6,7 +6,7 @@
   "module": "dist/lib.mjs",
   "scripts": {
     "test": "cake test",
-    "prepublish": "cake build"
+    "prepublishOnly": "cake build"
   },
   "homepage": "http://github.com/zeekay/executive",
   "bugs": {
@@ -25,7 +25,7 @@
     "run",
     "shell"
   ],
-  "author": "Zach Kelling <zk@monoid.io> (http://zeekay.io)",
+  "author": "Zach Kelling <z@zeekay.io>",
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
