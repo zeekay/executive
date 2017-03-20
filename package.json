@@ -45,7 +45,7 @@
     "es-is": "3.2.1",
     "mocha": "^3.2.0",
     "postmortem": "^0.2.3",
-    "shortcake": "1.1.20",
+    "shortcake": "1.2.5",
     "vigil": "^0.7.3"
   },
   "dependencies": {
