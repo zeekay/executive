@@ -4,6 +4,11 @@
   "description": "Elegant command execution.",
   "main": "dist/lib.js",
   "module": "dist/lib.mjs",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist/"
+  ],
   "scripts": {
     "test": "cake test",
     "prepublishOnly": "cake build"
