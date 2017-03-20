@@ -1,28 +1,10 @@
-Stream    = require 'stream'
-{spawn}   = require 'child_process'
+import {spawn} from 'child_process'
 
-parse = require './parse'
-{logError, once} = require './utils'
+import BufferStream     from './buffer-stream'
+import parse            from './parse'
+import {logError, once} from './utils'
 
-class BufferStream extends Stream
-  constructor: ->
-    @buffer = ''
-    @writable = true
-
-  write: (data) ->
-    @buffer += data
-
-  end: (data) ->
-    @write data if arguments.length
-    @writable = false
-
-  destroy: ->
-    @writable = false
-
-  toString: ->
-    @buffer
-
-module.exports = (cmd, opts, cb) ->
+export default (cmd, opts, cb) ->
   [cmd, args, opts] = parse cmd, opts
 
   stderr = new BufferStream()

@@ -1,10 +1,10 @@
-exec     = require './exec'
-execSync = require './execSync'
+import {isArray, isFunction, isString} from 'es-is'
 
-{parallel, serial}              = require './flow'
-{isArray, isFunction, isString} = require './utils'
+import exec               from './exec'
+import execSync           from './execSync'
+import {parallel, serial} from './flow'
 
-module.exports = (cmds, opts, cb) ->
+export default (cmds, opts, cb) ->
   # Split string of commands
   if isString cmds
     cmds = (cmds.split '\n').filter (c) -> c != ''

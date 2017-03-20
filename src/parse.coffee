@@ -1,8 +1,9 @@
-fs         = require 'fs'
-path       = require 'path'
-shellQuote = require 'shell-quote'
+import fs         from 'fs'
+import path       from 'path'
+import shellQuote from 'shell-quote'
+import {isString} from 'es-is'
 
-{isString, isWin} = require './utils'
+import {isWin} from './utils'
 
 # Check for any operators/glob patterns
 shellRequired = (args) ->
@@ -39,7 +40,7 @@ argsObject = (obj, opts, env) ->
 
   [cmd, args, env]
 
-module.exports = (args, opts = {}) ->
+export default (args, opts = {}) ->
   # Extend from process.env
   env = Object.assign process.env, (opts.env ? {})
 
