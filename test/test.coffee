@@ -2,7 +2,7 @@ chai = require 'chai'
 chai.should()
 chai.use require 'chai-as-promised'
 
-exec = require '../lib'
+exec = require '../'
 
 describe 'exec', ->
   it 'should accept Node.js style callbacks', (done) ->
