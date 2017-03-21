@@ -35,9 +35,9 @@
   "readmeFilename": "README.md",
   "devDependencies": {
     "cake-bundle": "0.1.9",
-    "cake-outdated": "0.1.10",
+    "cake-outdated": "0.1.11",
     "cake-publish": "0.1.5",
-    "cake-version": "0.1.9",
+    "cake-version": "0.1.10",
     "chai": "^3.4.1",
     "chai-as-promised": "^6.0.0",
     "co-mocha": "^1.1.2",
