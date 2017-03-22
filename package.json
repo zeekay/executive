@@ -34,10 +34,10 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "cake-bundle": "0.1.8",
-    "cake-outdated": "0.1.10",
+    "cake-bundle": "0.2.3",
+    "cake-outdated": "0.1.13",
     "cake-publish": "0.1.5",
-    "cake-version": "0.1.9",
+    "cake-version": "0.1.11",
     "chai": "^3.4.1",
     "chai-as-promised": "^6.0.0",
     "co-mocha": "^1.1.2",
