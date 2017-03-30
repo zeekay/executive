@@ -34,7 +34,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "cake-bundle": "0.2.6",
+    "cake-bundle": "0.2.17",
     "cake-outdated": "0.1.15",
     "cake-publish": "0.1.10",
     "cake-version": "0.1.11",
