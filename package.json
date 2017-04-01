@@ -35,7 +35,7 @@
   "readmeFilename": "README.md",
   "devDependencies": {
     "cake-bundle": "0.2.17",
-    "cake-outdated": "0.1.15",
+    "cake-outdated": "0.1.17",
     "cake-publish": "0.1.10",
     "cake-version": "0.1.12",
     "chai": "^3.4.1",
