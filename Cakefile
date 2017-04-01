@@ -12,8 +12,7 @@ task 'build', 'build project', ->
   bundle.write
     entry: './src/index.coffee'
     compilers:
-      coffee:
-        version: 1
+      coffee: version: 1
 
 task 'test', 'run tests', (opts, done) ->
   grep = if opts.grep then "--grep #{opts.grep}" else ''
