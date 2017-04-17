@@ -2,6 +2,8 @@
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/zeekay/executive.svg)](https://greenkeeper.io/)
 
+[![Join the chat at https://gitter.im/zeekay/executive](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/zeekay/executive?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 An elegant `child_process.spawn`. Automatically pipes `stderr` and `stdout` for
 you in a non-blocking fashion, making it very useful with build tools and task
 runners. Great async support with built-in serial and parallel command execution.
