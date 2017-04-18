@@ -1,37 +1,39 @@
-import {isArray, isFunction, isString} from 'es-is'
+import {isArray, isFunction, isObject, isString} from 'es-is'
 
 import exec               from './exec'
 import execSync           from './execSync'
 import {parallel, serial} from './flow'
 
 export default (cmds, opts, cb) ->
-  # Split string of commands
-  if isString cmds
-    cmds = (cmds.split '\n').filter (c) -> c != ''
-
-  # We also work with an array of commands
+  # Convert commands into an array if necessary
   unless isArray cmds
-    cmds = [cmds]
 
-  # Opts is optional
+    # Split string of commands
+    if isString cmds
+      cmds = (cmds.split '\n').filter (c) -> c != ''
+
+    # Create list of commands to execute if passed an object mapping
+    if isObject cmds
+      cmds = ({k: v} for k,v of cmds)
+
+  # Passed only callback
   if isFunction opts
     [cb, opts] = [opts, {}]
 
+  # Ensure opts exists
   opts ?= {}
 
-  # Pick async control flow mechanism and executor, defaults to async serial
+  # Pick control flow and executor, defaults to async + serial
   executor = exec
   flow     = serial
 
-  # execSync requested
   if opts.sync
-    executor = execSync
+    executor = execSync # Use sync
 
-  # Parallel execution requested
   if opts.parallel
-    flow = parallel
+    flow = parallel     # Use parallel
 
-  # Handle Node.js style callbacks
+  # Async exec with errback-style callback
   if cb and isFunction cb
     return flow executor, cmds, opts, cb
 
@@ -48,7 +50,7 @@ export default (cmds, opts, cb) ->
       else if err? and not status?
         throw err
 
-  # Promise API expected
+  # Async exec with Promise API expected
   new Promise (resolve, reject) ->
     flow executor, cmds, opts, (err, stdout, stderr, status) ->
       if opts.strict and status != 0
