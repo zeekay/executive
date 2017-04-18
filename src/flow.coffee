@@ -1,6 +1,18 @@
-import {isFunction, isPromise, isString} from 'es-is'
+import {isFunction, isPromise, isObject, isString} from 'es-is'
 
-export serial = (fn, cmds, opts, cb) ->
+
+# Wrap flow function so that it can be used to collect results for a mapping of
+# commands to results
+export objectify = (flow) ->
+  (fn, cmds, opts, cb) ->
+    unless isObject cmds
+      return flow fn, cmds, opts, cb
+
+    # We were passed an object mapping of commands, let's collect results
+    # instead and return that
+
+# Execute commands in serial
+export serial = objectify (fn, cmds, opts, cb) ->
   errAll     = ''
   outAll     = ''
   lastStatus = null
@@ -57,7 +69,8 @@ export serial = (fn, cmds, opts, cb) ->
     else
       cb new Error "Not a valid command: #{cmd.toString()}"
 
-export parallel = (fn, cmds, opts, cb) ->
+# Execute commands in parallel
+export parallel = objectify (fn, cmds, opts, cb) ->
   outAll = ''
   errAll = ''
   errors = []
