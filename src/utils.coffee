@@ -14,14 +14,14 @@ export once = (fn) ->
   result = null
   ->
     return result if ran
-    ran = true
+    ran    = true
     result = fn.apply @, arguments
-    fn = null
+    fn     = null
     result
 
 
 # Merge stdout, stderr, status into results object
-export objectify = (stdout, stderr, status, object) ->
+export mergeResult = (stdout, stderr, status, object) ->
   ret = if object? then object else {}
 
   ret.status ?= status
