@@ -9,8 +9,10 @@
     "src/"
   ],
   "scripts": {
-    "test": "cake test",
-    "prepublishOnly": "cake build"
+    "build": "sake build",
+    "prepublishOnly": "sake build",
+    "pretest": "sake build",
+    "test": "sake test"
   },
   "homepage": "http://github.com/zeekay/executive",
   "bugs": {
@@ -33,21 +35,17 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "cake-bundle": "0.2.21",
-    "cake-outdated": "0.1.18",
-    "cake-publish": "0.1.10",
-    "cake-version": "0.1.15",
-    "chai": "^3.4.1",
-    "chai-as-promised": "^6.0.0",
-    "co-mocha": "^1.1.2",
-    "coffee-script": "^1.10.0",
+    "coffee-script": "1.10.0",
     "es-is": "3.2.2",
-    "mocha": "^3.2.0",
-    "postmortem": "^0.2.3",
-    "shortcake": "1.2.8",
-    "vigil": "^0.7.3"
+    "sake-bundle": "0.4.16",
+    "sake-cli": "0.4.7",
+    "sake-outdated": "0.1.21",
+    "sake-publish": "0.1.12",
+    "sake-test": "0.1.5",
+    "sake-version": "0.1.18",
+    "vigil": "0.7.3"
   },
   "dependencies": {
-    "shell-quote": "^1.4.3"
+    "shell-quote": "1.4.3"
   }
 }

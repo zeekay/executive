@@ -1,32 +1,14 @@
-require 'shortcake'
-
-use require 'cake-bundle'
-use require 'cake-outdated'
-use require 'cake-publish'
-use require 'cake-version'
-
-option '-g', '--grep [filter]', 'test filter'
-option '-t', '--test',          'test specific module'
+use 'sake-bundle'
+use 'sake-outdated'
+use 'sake-publish'
+use 'sake-version'
+use 'sake-test'
 
 task 'build', 'build project', ->
   bundle.write
     entry: './src/index.coffee'
     compilers:
       coffee: version: 1
-
-task 'test', 'run tests', (opts, done) ->
-  grep = if opts.grep then "--grep #{opts.grep}" else ''
-  test = opts.test ? 'test/'
-
-  yield exec "NODE_ENV=test node_modules/.bin/mocha
-                      --colors
-                      --reporter spec
-                      --timeout 5000
-                      --compilers coffee:coffee-script/register
-                      --require postmortem/register
-                      --require co-mocha
-                      #{grep}
-                      #{test}"
 
 task 'watch', 'watch for changes and rebuild project', ->
   exec 'node_modules/.bin/coffee -bcmw -o lib/ src/'
