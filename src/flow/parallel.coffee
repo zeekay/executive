@@ -1,4 +1,10 @@
-import {isFunction, isPromise, isObject, isString} from 'es-is'
+import {
+  isArray
+  isFunction
+  isObject
+  isPromise
+  isString
+} from 'es-is'
 
 # Execute commands in parallel
 export default parallel = (fn, cmds, opts, cb) ->
@@ -7,8 +13,13 @@ export default parallel = (fn, cmds, opts, cb) ->
   errors = []
   todo   = cmds.length
 
-  append = (res = {}) ->
-    {stdout, stderr, status} = res
+  if cmds.length and isArray cmds[0]
+    object = {}
+  else
+    object = null
+
+  append = (key, res = {}) ->
+    {error, stdout, stderr, status} = res
 
     if stdout?
       outAll += stdout
@@ -19,6 +30,13 @@ export default parallel = (fn, cmds, opts, cb) ->
       status
     else
       0
+
+    if key?
+      object[key] =
+        error:  error
+        stdout: stdout
+        stderr: stderr
+        status: status
 
   done = (err, status = 0) ->
     if err?
@@ -34,34 +52,41 @@ export default parallel = (fn, cmds, opts, cb) ->
       err.errors = errors
       status = 1
 
-    cb err, outAll, errAll, status
+    cb err, outAll, errAll, status, object
 
   while cmds.length
     cmd = cmds.shift()
+    do (cmd) ->
+      [key, cmd] = cmd if isArray cmd
 
-    if isString cmd
-      fn cmd, opts, (err, stdout, stderr, status) ->
-        append stdout: stdout, stderr: stderr
-        done err, status
-    else if isFunction cmd
-      try
-        val = cmd()
-        if isPromise val
-          cmds.push val
-        else if isString val
-          cmds.push val
-        else
-          append val
-          done null, 0
-      catch err
-        done err
+      if isString cmd
+        fn cmd, opts, (err, stdout, stderr, status) ->
+          append key,
+            error:  err
+            stdout: stdout
+            stderr: stderr
+            status: status
+          done err, status
 
-    else if isPromise cmd
-      cmd
-        .then  (val) ->
-          append val
-          done null, 0
-        .catch (err) ->
+      else if isFunction cmd
+        try
+          val = cmd()
+          if isPromise val
+            cmds.push val
+          else if isString val
+            cmds.push val
+          else
+            append key, val
+            done null, 0
+        catch err
           done err
+
+      else if isPromise cmd
+        cmd
+          .then (val) ->
+            append key, val
+            done null, 0
+          .catch (err) ->
+            done err
 
   return

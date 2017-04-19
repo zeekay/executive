@@ -7,28 +7,23 @@ import serial   from './serial'
 
 
 # Execute array of commands, with serial exution by default
-array = (exec, arr, opts, cb) ->
+array = (exec, cmds, opts, cb) ->
   if opts.parallel
-    parallel exec, arr, opts, cb
+    parallel exec, cmds, opts, cb
   else
-    serial exec, arr, opts, cb
+    serial exec, cmds, opts, cb
 
 
 # Execute string representing commands
 string = (exec, str, opts, cb) ->
-  arr = (str.split '\n').filter (c) -> c != ''
-  array exec, arr, opts, cb
+  cmds = (s for s in str.split '\n' when s.trim() != '')
+  array exec, cmds, opts, cb
 
 
 # Execute object of commands
 object = (exec, obj, opts, cb) ->
-  ret  = Object.assign {}, obj
-  cmds = ([k,v] for k,v of obj)
-
-  # Synchronous command execution, neither parallel nor serial matter
-  if opts.sync
-    for [k, cmd] in cmds
-      serial exec, cmds, opts, (err, stdout, stderr, status) ->
+  cmds = ([k, cmd] for k, cmd of obj)
+  array exec, cmds, opts, cb
 
 
 # Execute commands using either serial or parallel control flow and return
