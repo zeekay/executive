@@ -1,6 +1,3 @@
-export isWin = /^win/.test process.platform
-
-
 # Log error
 export logError = (err) ->
   if (err.code is 'ENOENT') and /^spawn/.test err.syscall
