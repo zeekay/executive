@@ -23,7 +23,6 @@ sync = (cmds, opts) ->
     if opts.syncThrows
       if opts.strict and status != 0
         throw err
-
       else if err? and not status?
         throw err
 
