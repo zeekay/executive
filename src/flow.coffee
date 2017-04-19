@@ -1,18 +1,8 @@
 import {isFunction, isPromise, isObject, isString} from 'es-is'
 
 
-# Wrap flow function so that it can be used to collect results for a mapping of
-# commands to results
-export objectify = (flow) ->
-  (fn, cmds, opts, cb) ->
-    unless isObject cmds
-      return flow fn, cmds, opts, cb
-
-    # We were passed an object mapping of commands, let's collect results
-    # instead and return that
-
 # Execute commands in serial
-export serial = objectify (fn, cmds, opts, cb) ->
+serial = (fn, cmds, opts, cb) ->
   errAll     = ''
   outAll     = ''
   lastStatus = null
@@ -70,7 +60,7 @@ export serial = objectify (fn, cmds, opts, cb) ->
       cb new Error "Not a valid command: #{cmd.toString()}"
 
 # Execute commands in parallel
-export parallel = objectify (fn, cmds, opts, cb) ->
+parallel = (fn, cmds, opts, cb) ->
   outAll = ''
   errAll = ''
   errors = []
@@ -134,3 +124,53 @@ export parallel = objectify (fn, cmds, opts, cb) ->
           done err
 
   return
+
+
+# Execute array of commands, with serial execution by default
+array = (fn, arr, opts, cb) ->
+  if opts.parallel
+    parallel fn, arr, opts, cb
+  else
+    serial fn, arr, opts, cb
+
+
+# Execute string representing commands
+string = (fn, str, opts, cb) ->
+  arr = (str.split '\n').filter (c) -> c != ''
+  array fn, arr, opts, cb
+
+
+# Execute object of commands
+object = (fn, obj, opts, cb) ->
+  ret  = Object.assign {}, obj
+  cmds = ([k,v] for k,v of obj)
+
+  # Synchronous command execution, neither parallel nor serial matter
+  if opts.sync
+    for [k,cmd] in cmds
+      serial fn, cmd, opts, ()
+
+    Promise.all (serial fn, cmd, opts, cb) for k,cmd of cmds
+      .then (results) ->
+
+  else
+    done = (k) ->
+      (res = {}) ->
+        ret[k] = res
+
+    do next = ->
+      unless cmds.length
+        serial fn, cmd, opts, done
+
+
+# Execute commands using either serial or parallel control flow and return
+# result to cb
+export default flow = (executor, cmds, opts, cb) ->
+  if isString cmds
+    string executor, cmds, opts, cb
+  if isObject cmds
+    object executor, cmds, opts, cb
+  if isArray cmds
+    array executor,  cmds, opts, cb
+
+  throw new Error "Unable to return results for cmds = #{JSON.stringify cmds}"
