@@ -9,16 +9,16 @@ isWin = /^win/.test process.platform
 
 # Couple of hacks to ensure commands run smoothly on Windows
 winHacks = (cmd, args) ->
-  # Normalize path for Windows
-  cmd = path.normalize cmd
+  cmd     = path.normalize cmd
+  cmdfile = cmd + '.cmd'
 
-  # Check for a .cmd version and use it if it exists
-  if fs.existsSync file = cmd + '.cmd'
-    cmd = file
+  # Use .cmd version of command if it exists
+  cmd = cmdfile if fs.existsSync cmdfile
 
   # Setup arguments for cmd.exe and use that as executable
   args = ['/c', cmd].concat args
-  cmd = 'cmd.exe'
+  cmd  = 'cmd.exe'
+
   [cmd, args]
 
 
