@@ -64,7 +64,16 @@ Want to execute your commands in parallel? No problem.
 exec.parallel(['ls', 'ls', 'ls'])
 ```
 
-Want to blend in Promises or pure functions? No problem.
+Want to collect individual results? Easy.
+```javascript
+{a, b, c} = await exec.parallel({
+  a: 'echo a',
+  b: 'echo b',
+  c: 'echo c'
+})
+```
+
+Want to blend in Promises or pure functions? You got it.
 ```javascript
 exec.parallel([
   'ls',
