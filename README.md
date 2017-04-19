@@ -148,16 +148,12 @@ an error will be thrown with `exec.sync` if `syncThrows` is enabled.
 Will cause `exec.sync` to throw errors rather than returning them.
 
 ## Extra
-Great with `cake`, `grunt`, `gulp` and other task runners. Even better mixed
+Great with `sake`, `grunt`, `gulp` and other task runners. Even better mixed
 with generator-based control flow libraries and/or ES7 `async`/`await`.
 
-Complex example using [`shortcake`](http://github.com/zeekay/shortcake) (which
-provides a superset of [Cake](http://coffeescript.org)'s features, including
-generator/promise support):
+Complex example using [`sake`](http://github.com/sakejs/sake-cli):
 
 ```coffeescript
-require 'shortcake'
-
 task 'package', 'Package project', ->
   await exec '''
     mkdir -p dist/
