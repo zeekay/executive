@@ -6,7 +6,9 @@ use 'sake-test'
 
 task 'build', 'build project', ->
   bundle.write
-    entry: './src/index.coffee'
+    entry:    './src/index.coffee'
+    external: false
+    commonjs: true
     compilers:
       coffee: version: 1
 
