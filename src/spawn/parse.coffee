@@ -3,17 +3,35 @@ import path       from 'path'
 import shellQuote from 'shell-quote'
 import {isString} from 'es-is'
 
-import {isWin} from '../utils'
+isWin = /^win/.test process.platform
 
-# Check for any operators/glob patterns
+# Couple of hacks to ensure commands run smoothly on Windows
+winHacks = (cmd, args) ->
+  # Normalize path for Windows
+  cmd = path.normalize cmd
+
+  # Check for a .cmd version and use it if it exists
+  if fs.existsSync file = cmd + '.cmd'
+    cmd = file
+
+  # Setup arguments for cmd.exe and use that as executable
+  args = ['/c', cmd].concat args
+  cmd = 'cmd.exe'
+  [cmd, args]
+
+
+# Check for any operators or glob patterns
 shellRequired = (args) ->
   for arg in args
     unless isString arg
       return true
   false
 
-argsString = (s, opts, env) ->
+
+# Parse cmd, args, env from string command
+string = (s, opts) ->
   args = shellQuote.parse s
+  env  = {}
 
   # Parse out enviromental variables
   while cmd = args.shift()
@@ -29,41 +47,28 @@ argsString = (s, opts, env) ->
 
   [cmd, args, env]
 
-argsObject = (obj, opts, env) ->
-  # Here args should be an object.
-  cmd = obj.cmd
 
-  # Merge any specified env vars.
-  env = Object.assign env, obj.env ? {}
-
+# Parse command object into cmd, args env
+object = (obj, opts) ->
+  cmd  = obj.cmd
   args = obj.args ? []
+  [cmd, args, obj.env]
 
-  [cmd, args, env]
 
-export default (args, opts = {}) ->
-  # Extend from process.env
-  env = Object.assign process.env, (opts.env ? {})
-
-  # If args is a string, parse it into cmd/args/env.
-  if isString args
-    [cmd, args, env] = argsString args, opts, env
+export default (cmd, opts = {}) ->
+  # Parse cmd, args, env from string or object
+  if isString cmd
+    [cmd, args, env] = string cmd, opts
+  else if isObject cmd
+    [cmd, args, env] = object cmd, opts
   else
-    [cmd, args, env] = argsObject args, opts, env
+    throw new Error "Unable to parse cmd = #{cmd}"
 
-  # Pass env to spawn
-  opts.env = env
+  # Use process.env by default, with any env variables parsed out overriding
+  opts.env = Object.assign {}, process.env, opts.env, env
 
-  # Hacks to work around Windows oddities.
-  if isWin
-    # Normalize path for Windows
-    cmd = path.normalize cmd
+  # Apply hacks to work around Windows oddities if necessary
+  [cmd, args] = winHacks cmd, args if isWin
 
-    # Check for a .cmd version and use it if it exists
-    if fs.existsSync cmd_ = cmd + '.cmd'
-      cmd = cmd_
-
-    # Setup arguments for cmd.exe and use that as executable
-    args = ['/c', cmd].concat args
-    cmd = 'cmd.exe'
-
+  # Our normalized cmd, args and opts
   [cmd, args, opts]
