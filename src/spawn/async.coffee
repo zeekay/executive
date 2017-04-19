@@ -4,7 +4,7 @@ import BufferStream     from './buffer-stream'
 import parse            from './parse'
 import {logError, once} from '../utils'
 
-export default (cmd, opts, cb) ->
+export default async = (cmd, opts, cb) ->
   [cmd, args, opts] = parse cmd, opts
 
   stderr = new BufferStream()
