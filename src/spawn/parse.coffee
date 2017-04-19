@@ -3,7 +3,9 @@ import path       from 'path'
 import shellQuote from 'shell-quote'
 import {isString} from 'es-is'
 
+
 isWin = /^win/.test process.platform
+
 
 # Couple of hacks to ensure commands run smoothly on Windows
 winHacks = (cmd, args) ->
@@ -28,7 +30,7 @@ shellRequired = (args) ->
   false
 
 
-# Parse cmd, args, env from string command
+# Parse cmd, args, env from string
 string = (s, opts) ->
   args = shellQuote.parse s
   env  = {}
@@ -48,15 +50,15 @@ string = (s, opts) ->
   [cmd, args, env]
 
 
-# Parse command object into cmd, args env
+# Parse cmd, args, env from object
 object = (obj, opts) ->
   cmd  = obj.cmd
   args = obj.args ? []
   [cmd, args, obj.env]
 
 
+# Parse cmd, args, env from string or object
 export default (cmd, opts = {}) ->
-  # Parse cmd, args, env from string or object
   if isString cmd
     [cmd, args, env] = string cmd, opts
   else if isObject cmd
@@ -64,7 +66,7 @@ export default (cmd, opts = {}) ->
   else
     throw new Error "Unable to parse cmd = #{cmd}"
 
-  # Use process.env by default, with any env variables parsed out overriding
+  # Use process.env by default, but allow opts.env and parsed env to override
   opts.env = Object.assign {}, process.env, opts.env, env
 
   # Apply hacks to work around Windows oddities if necessary
