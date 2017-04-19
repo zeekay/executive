@@ -22,6 +22,7 @@ control flow.
 - Automatically uses shell when commands use operators or globs
 - New-line delimited strings are automatically executed sequentially
 - Easily blend commands, pure functions and promises with built-in control flow
+- No external dependencies
 
 ## Install
 ```bash
