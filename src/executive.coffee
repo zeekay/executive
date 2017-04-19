@@ -1,6 +1,6 @@
 import {isFunction} from 'es-is'
 
-import flow        from './flow'
+import flow from './flow'
 import {mergeResult} from './utils'
 
 
