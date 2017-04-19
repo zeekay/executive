@@ -57,6 +57,12 @@ describe 'exec', ->
     stdout.should.eq '1\n2\n3\n4'
     stderr.should.eq ''
 
+  it 'should collect results when commands are an object', ->
+    {a, b, stderr} = yield exec.serial a: 'echo a', b: 'echo b'
+    a.stdout.trim().should.eq 'a'
+    b.stdout.trim().should.eq 'b'
+    stderr.should.eq ''
+
   describe 'promises', ->
     it 'should not reject non-zero status', ->
       {stdout, stderr, status} = yield exec.quiet 'bash -c doesnotexist'
@@ -98,6 +104,12 @@ describe 'exec', ->
       stdout.should.eq '1\n'
       stderr.should.eq ''
 
+    it 'should collect results when commands are an object', ->
+      {a, b, stderr} = yield exec.sync a: 'echo a', b: 'echo b'
+      a.stdout.trim().should.eq 'a'
+      b.stdout.trim().should.eq 'b'
+      stderr.should.eq ''
+
   describe 'parallel', ->
     it 'should execute commands in parallel', ->
       {stdout, stderr} = yield exec.parallel '''
@@ -118,4 +130,10 @@ describe 'exec', ->
       lines = (x.trim() for x in stdout.trim().split '\n')
       lines.sort()
       lines.should.eql ['1', '2', '3']
+      stderr.should.eq ''
+
+    it 'should collect results when commands are an object', ->
+      {a, b, stderr} = yield exec.parallel a: 'echo a', b: 'echo b'
+      a.stdout.trim().should.eq 'a'
+      b.stdout.trim().should.eq 'b'
       stderr.should.eq ''
