@@ -1,8 +1,6 @@
 import {isFunction} from 'es-is'
 
-import exec     from './exec'
-import execSync from './execSync'
-import flow     from './flow'
+import flow from './flow'
 
 
 # Merge stdout, stderr, status into results object
