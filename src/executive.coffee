@@ -1,17 +1,7 @@
 import {isFunction} from 'es-is'
 
-import flow from './flow'
-
-
-# Merge stdout, stderr, status into results object
-objectify = (stdout, stderr, status, object) ->
-  ret = if object? then object else {}
-
-  ret.status ?= status
-  ret.stderr ?= stderr
-  ret.stdout ?= stdout
-
-  ret
+import flow        from './flow'
+import {objectify} from './utils'
 
 
 # Return executive results asynchronously
