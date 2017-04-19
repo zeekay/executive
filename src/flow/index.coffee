@@ -6,7 +6,7 @@ import parallel from './parallel'
 import serial   from './serial'
 
 
-# exute array of commands, with serial exution by default
+# Execute array of commands, with serial exution by default
 array = (ex, arr, opts, cb) ->
   if opts.parallel
     parallel ex, arr, opts, cb
@@ -14,13 +14,13 @@ array = (ex, arr, opts, cb) ->
     serial ex, arr, opts, cb
 
 
-# exute string representing commands
+# Execute string representing commands
 string = (ex, str, opts, cb) ->
   arr = (str.split '\n').filter (c) -> c != ''
   array ex, arr, opts, cb
 
 
-# exute object of commands
+# Execute object of commands
 object = (ex, obj, opts, cb) ->
   ret  = Object.assign {}, obj
   cmds = ([k,v] for k,v of obj)
