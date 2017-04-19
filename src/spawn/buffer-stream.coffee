@@ -3,7 +3,7 @@ import Stream from 'stream'
 class BufferStream extends Stream
   constructor: ->
     super()
-    @buffer = ''
+    @buffer   = ''
     @writable = true
 
   write: (data) ->
