@@ -1,24 +1,18 @@
 import {isFunction} from 'es-is'
 
-import executive    from './executive'
+import exec from './executive'
 
-# Setup defaults for various shortcut helpers
+# Set defaults for various helpers
 partial = (defaults) ->
   (cmds, opts, cb) ->
-    if isFunction opts
-      [cb, opts] = [opts, {}]
-
-    opts = Object.assign {}, defaults, opts ? {}
-
-    executive cmds, opts, cb
+    [cb, opts] = [opts, {}] if isFunction opts
+    exec cmds, (Object.assign {}, defaults, opts), cb
 
 # Defaults
-wrapper = partial quiet: false, interactive: false, sync: false
+exec.interactive = partial interactive: true
+exec.parallel    = partial parallel:    true
+exec.quiet       = partial quiet:       true
+exec.serial      = partial parallel:    false
+exec.sync        = partial sync:        true
 
-wrapper.interactive = partial interactive: true
-wrapper.parallel    = partial parallel:    true
-wrapper.serial      = partial parallel:    false
-wrapper.quiet       = partial quiet:       true
-wrapper.sync        = partial sync:        true
-
-export default wrapper
+export default exec
