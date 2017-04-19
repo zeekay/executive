@@ -1,14 +1,14 @@
 import {isFunction} from 'es-is'
 
 import flow        from './flow'
-import {objectify} from './utils'
+import {mergeResult} from './utils'
 
 
 # Return executive results asynchronously
 async = (cmds, opts, cb) ->
   flow cmds, opts, (err, stdout, stderr, status, object) ->
     if object?
-      obj = objectify stdout, stderr, status, object
+      obj = mergeResult stdout, stderr, status, object
       cb err, obj, stdout, stderr, status
     else
       cb err, stdout, stderr, status
@@ -27,7 +27,7 @@ sync = (cmds, opts) ->
       else if err? and not status?
         throw err
 
-    ret = objectify stdout, stderr, status, object
+    ret = mergeResult stdout, stderr, status, object
 
   ret
 
@@ -41,7 +41,7 @@ promise = (cmds, opts) ->
       else if err? and not status?
         return reject err
 
-      resolve objectify stdout, stderr, status, object
+      resolve mergeResult stdout, stderr, status, object
 
 
 # Run string, array or object commands and return results
