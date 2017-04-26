@@ -41,9 +41,12 @@ describe 'exec', ->
       stderr.should.contain 'command not found'
       done()
 
-  it 'should shell out if necessary', ->
-    {stdout} = yield exec 'echo foo | cat'
-    stdout.should.eq 'foo\n'
+  it 'should spawn shell if glob or pipe detected', ->
+    (yield exec 'echo foo | cat').stdout.should.eq 'foo\n'
+
+  it 'should spawn shell if shell builtins detected', ->
+    process.env.FOO = 1
+    (yield exec 'echo $FOO').stdout.should.eq '1\n'
 
   it 'should execute functions and promises as commands', ->
     val = null
@@ -58,9 +61,9 @@ describe 'exec', ->
     stderr.should.eq ''
 
   it 'should collect results when commands are an object', ->
-    {a, b, stderr} = yield exec.serial a: 'echo a', b: 'echo b'
-    a.stdout.trim().should.eq 'a'
-    b.stdout.trim().should.eq 'b'
+    {a, b, stderr} = yield exec.serial a: 'printf a', b: 'printf b'
+    a.stdout.should.eq 'a'
+    b.stdout.should.eq 'b'
     stderr.should.eq ''
 
   describe 'promises', ->
@@ -75,17 +78,18 @@ describe 'exec', ->
       yield p.should.be.rejectedWith Error
 
     it 'should continue processing, when strict mode is implicitly disabled, after a non-zero exit code', ->
-      {stdout, stderr} = yield exec ['bash -c "exit 1"', "echo -n 'It worked'"]
-      stdout.should.eq 'It worked'
+      {stdout, stderr} = yield exec ['bash -c "exit 1"', "printf worked"]
+      console.log stdout, stderr
+      stdout.should.eq 'worked'
       stderr.should.eq ''
 
     it 'should continue processing, when strict mode is explicitly disabled, after a non-zero exit code', ->
-      {stdout, stderr} = yield exec ['bash -c "exit 1"', "echo -n 'It worked'"], { strict:false }
-      stdout.should.eq 'It worked'
+      {stdout, stderr} = yield exec ['bash -c "exit 1"', "printf worked"], strict: false
+      stdout.should.eq 'worked'
       stderr.should.eq ''
 
     it 'should not continue processing when strict mode is enabled after a non-zero exit code', ->
-      p = exec ['bash -c "exit 1"', "echo -n 'It worked'"], { strict:true }
+      p = exec ['bash -c "exit 1"', "printf worked"], strict: true
       yield p.should.be.rejectedWith Error
 
   describe 'interactive', ->
@@ -105,9 +109,9 @@ describe 'exec', ->
       stderr.should.eq ''
 
     it 'should collect results when commands are an object', ->
-      {a, b, stderr} = yield exec.sync a: 'echo a', b: 'echo b'
-      a.stdout.trim().should.eq 'a'
-      b.stdout.trim().should.eq 'b'
+      {a, b, stderr} = yield exec.sync a: 'printf a', b: 'printf b'
+      a.stdout.should.eq 'a'
+      b.stdout.should.eq 'b'
       stderr.should.eq ''
 
   describe 'parallel', ->
@@ -133,7 +137,7 @@ describe 'exec', ->
       stderr.should.eq ''
 
     it 'should collect results when commands are an object', ->
-      {a, b, stderr} = yield exec.parallel a: 'echo a', b: 'echo b'
-      a.stdout.trim().should.eq 'a'
-      b.stdout.trim().should.eq 'b'
+      {a, b, stderr} = yield exec.parallel a: 'printf a', b: 'printf b'
+      a.stdout.should.eq 'a'
+      b.stdout.should.eq 'b'
       stderr.should.eq ''

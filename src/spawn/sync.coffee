@@ -3,6 +3,7 @@ import {spawnSync} from 'child_process'
 import parse      from './parse'
 import {logError} from '../utils'
 
+
 export default sync = (cmd, opts, cb) ->
   [cmd, args, opts] = parse cmd, opts
 

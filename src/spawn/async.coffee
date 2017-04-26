@@ -4,6 +4,7 @@ import BufferStream     from './buffer-stream'
 import parse            from './parse'
 import {logError, once} from '../utils'
 
+
 export default async = (cmd, opts, cb) ->
   [cmd, args, opts] = parse cmd, opts
 
@@ -13,10 +14,12 @@ export default async = (cmd, opts, cb) ->
   child = spawn cmd, args,
     cwd:      opts.cwd
     env:      opts.env
+    argv0:    opts.argv0
     stdio:    opts.stdio ? [0, 'pipe', 'pipe']
     detached: opts.detached
     uid:      opts.uid
     gid:      opts.gid
+    shell:    opts.shell
 
   child.setMaxListeners 0
   child.stdout.setEncoding opts.encoding ? 'utf8'
