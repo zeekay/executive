@@ -5,10 +5,10 @@ import {isString, isObject} from 'es-is'
 
 import builtins   from './shell-builtins'
 
-
 isWin = /^win/.test process.platform
 
 
+# Convert objects in shell-quote results back into string arguments
 unShellQuote = (args) ->
   args_ = []
   for a in args
@@ -21,23 +21,37 @@ unShellQuote = (args) ->
         args_.push a.op
   args_
 
-parseEnv = (s) ->
-  env = {}
 
-  # Parse out enviromental variables
-  args = s.split ' '
-  while cmd = args.shift()
-    break if (cmd.indexOf '=') is -1
-    [k,v] = cmd.split '=', 2
-    env[k] = v
-  env
+# Parse string containing shell command
+parseShell = (s, env) ->
+  args = shellQuote.parse s, env
+
+  # Grab command (usually first argument)
+  cmd  = args.shift()
+
+  # Process any env vars that might be in front of our command
+  while ~cmd.indexOf '='
+    # Found env var i.e., FOO=1 echo $FOO
+    foundEnv = true
+
+    # Update env object
+    [k,v]    = cmd.split '=', 2
+    env[k]   = v
+
+    # Grab next arg, see if it's a command
+    cmd = args.shift()
+
+  # Re-parse if env var discovered
+  if foundEnv
+    return parseShell s, env
+
+  [cmd, args, env]
+
 
 # Parse cmd, args, env from string
 parseString = (s, opts) ->
-  env  = Object.assign {}, process.env, opts.env, parseEnv s
-  args = shellQuote.parse s, env
-  cmd  = args.shift()
-  [cmd, args, env]
+  env = Object.assign {}, process.env, opts.env
+  [cmd, args, env] = parseShell s, env
 
 
 # Parse cmd, args, env from object

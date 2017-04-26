@@ -44,9 +44,12 @@ describe 'exec', ->
   it 'should spawn shell if glob or pipe detected', ->
     (yield exec 'echo foo | cat').stdout.should.eq 'foo\n'
 
+  it 'should parse env variables from beginning of commands', ->
+    (yield exec 'FOO="foo env" printf $FOO').stdout.should.eq 'foo env'
+
   it 'should spawn shell if shell builtins detected', ->
     process.env.FOO = 1
-    (yield exec 'echo $FOO').stdout.should.eq '1\n'
+    (yield exec 'printf $FOO').stdout.should.eq '1'
 
   it 'should execute functions and promises as commands', ->
     val = null
