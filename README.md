@@ -11,17 +11,17 @@
 
 Executive is a simple library which provides a more intuitive interface to
 [`child_process.spawn`][child_process]. Very useful with build tools and task
-runners. Async and sync command execution with built-in serial and parallel
-control flow.
+runners. Async and sync command execution with built-in control flow for
+executing multiple commands and collecting results.
 
 ## Features
-- Promise, Errback, and Synchronous APIs
-- Serial execution by default with parallel execution optional
 - Automatically pipes `stderr` and `stdout` by default
+- Automatically uses shell when commands use builtins, globs or operators
+- Built-in control flow with support for parallel and serial execution
+- Mix simple string commands with functions and promises returning commands
+- Multi-line strings parsed as multiple commands and executed sequentially
+- Async callback, promise and sync APIs
 - Streams `stderr` and `stdout` rather than blocking on command completion
-- Automatically uses shell when commands use operators or globs
-- New-line delimited strings are automatically executed sequentially
-- Easily blend commands, pure functions and promises with built-in control flow
 - No external dependencies
 
 ## Install
