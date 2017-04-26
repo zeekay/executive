@@ -15,12 +15,12 @@ runners. Async and sync command execution with built-in control flow for
 executing multiple commands and collecting results.
 
 ## Features
+- Async callback, promise and sync APIs
 - Automatically pipes `stderr` and `stdout` by default
 - Automatically uses shell when commands use builtins, globs or operators
 - Built-in control flow with support for parallel and serial execution
 - Mix simple string commands with functions and promises returning commands
 - Multi-line strings parsed as multiple commands and executed sequentially
-- Async callback, promise and sync APIs
 - Streams `stderr` and `stdout` rather than blocking on command completion
 - No external dependencies
 
