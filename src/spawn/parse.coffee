@@ -27,7 +27,7 @@ parseShell = (s, env) ->
   args = shellQuote.parse s, env
 
   # Grab command (usually first argument)
-  cmd  = args.shift()
+  cmd = args.shift()
 
   # Process any env vars that might be in front of our command
   while ~cmd.indexOf '='
@@ -35,15 +35,16 @@ parseShell = (s, env) ->
     foundEnv = true
 
     # Update env object
-    [k,v]    = cmd.split '=', 2
-    env[k]   = v
+    [k, v] = cmd.split '=', 2
+    env[k] = v
 
     # Grab next arg, see if it's a command
     cmd = args.shift()
 
-  # Re-parse if env var discovered
+  # Re-parse w/o inline env variables if any discovered
   if foundEnv
-    return parseShell s, env
+    [vars, rest] = s.split cmd, 2
+    return parseShell cmd+rest, env
 
   [cmd, args, env]
 
