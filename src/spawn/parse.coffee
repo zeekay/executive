@@ -23,7 +23,7 @@ unShellQuote = (args) ->
 
 
 # Parse string containing shell command
-parseShell = (s, env) ->
+parseShell = (s, env, first=true) ->
   args = shellQuote.parse s, env
 
   # Grab command (usually first argument)
@@ -42,9 +42,8 @@ parseShell = (s, env) ->
     cmd = args.shift()
 
   # Re-parse w/o inline env variables if any discovered
-  if foundEnv
-    [vars, rest] = s.split cmd, 2
-    return parseShell cmd+rest, env
+  if first and foundEnv
+    return parseShell s, env, false
 
   [cmd, args, env]
 
