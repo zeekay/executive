@@ -45,7 +45,7 @@ describe 'exec', ->
     (yield exec 'echo foo | cat').stdout.should.eq 'foo\n'
 
   it 'should parse env variables from beginning of commands', ->
-    (yield exec 'FOO="foo env" printf $FOO').stdout.should.eq 'foo env'
+    (yield exec 'FOO="foo env" echo $FOO').stdout.should.eq 'foo env\n'
 
   it 'should spawn shell if shell builtins detected', ->
     process.env.FOO = 1
