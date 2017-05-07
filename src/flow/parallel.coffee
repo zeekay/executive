@@ -41,8 +41,7 @@ export default parallel = (fn, cmds, opts, cb) ->
   done = (err, status = 0) ->
     if err?
       unless opts.quiet
-        console.error err
-        console.error err.stack
+        console.error err.toString()
       errors.push err
 
     return if --todo
