@@ -13,6 +13,7 @@ exec.interactive = partial interactive: true
 exec.parallel    = partial parallel:    true
 exec.quiet       = partial quiet:       true
 exec.serial      = partial parallel:    false
+exec.strict      = partial strict:      true
 exec.sync        = partial sync:        true
 
 export default exec
