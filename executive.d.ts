@@ -7,4 +7,5 @@ interface executive {
   strict: executive
   sync: (command: string | any[], options?: any, callback?: any) => any
 }
-declare var executive: executive
+declare var exec: executive
+export default exec
