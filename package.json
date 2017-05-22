@@ -43,7 +43,7 @@
   "devDependencies": {
     "coffee-script": "1.12.6",
     "es-is": "^3.3.10",
-    "sake-bundle": "^0.5.3",
+    "sake-bundle": "^0.6.0",
     "sake-cli": "^0.5.14",
     "sake-outdated": "^0.1.27",
     "sake-publish": "^0.1.16",
