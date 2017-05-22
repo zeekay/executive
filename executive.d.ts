@@ -8,8 +8,4 @@ export interface executive {
   sync: (command: string | any[], options?: any, callback?: any) => any
 }
 
-declare global {
-  var exec: executive
-}
-
 export default executive
