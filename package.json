@@ -1,6 +1,6 @@
 {
   "name": "executive",
-  "version": "1.5.10",
+  "version": "1.5.11",
   "description": "Elegant command execution with built-in control flow",
   "main": "lib/executive.js",
   "module": "lib/executive.mjs",
