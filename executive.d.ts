@@ -1,4 +1,4 @@
-interface executive {
+export interface executive {
   (command: string | any[], options?: any, callback?: any): Promise<any>
   interactive: executive
   parallel: executive
@@ -7,5 +7,9 @@ interface executive {
   strict: executive
   sync: (command: string | any[], options?: any, callback?: any) => any
 }
-declare var _default: executive
-export default _default
+
+declare global {
+  var exec: executive
+}
+
+export default executive
