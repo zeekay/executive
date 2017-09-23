@@ -48,6 +48,7 @@ export default serial = (fn, cmds, opts, cb) ->
     [key, cmd] = cmd if isArray cmd
 
     if isString cmd
+      cmd = cmd.replace /\\/g, '\\\\'
       fn cmd, opts, (err, stdout, stderr, status) ->
         append key,
           error:  err
