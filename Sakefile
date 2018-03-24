@@ -9,8 +9,6 @@ task 'build', 'build project', ->
     entry:    './src/index.coffee'
     external: false
     commonjs: true
-    compilers:
-      coffee: version: 1
 
 task 'watch', 'watch for changes and rebuild project', ->
   exec 'node_modules/.bin/coffee -bcmw -o lib/ src/'
