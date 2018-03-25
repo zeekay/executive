@@ -47,7 +47,7 @@
     "sake-cli": "^0.5.24",
     "sake-outdated": "^0.2.1",
     "sake-publish": "^0.1.16",
-    "sake-test": "^0.1.5",
+    "sake-test": "^0.2.0",
     "sake-version": "^0.1.19",
     "shell-quote": "^1.6.1",
     "vigil": "^0.7.3"
