@@ -5,6 +5,5 @@ npm-debug.log
 src/*.js
 bebop.js
 *.map
-.sake
 test/fixtures/app.js
 test/fixtures/app.js.map
