@@ -23,6 +23,7 @@ make working with external processes in Node easy.
 - Multi-line strings parsed as multiple commands and executed sequentially
 - Streams `stderr` and `stdout` rather than blocking on command completion
 - Included TypeScript type definition
+- Improved Windows support
 - No external dependencies
 
 ## Install

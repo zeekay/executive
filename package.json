@@ -41,6 +41,9 @@
   ],
   "author": "Zach Kelling <z@zeekay.io>",
   "license": "MIT",
+  "engines": {
+    "node": ">=0.6"
+  },
   "devDependencies": {
     "coffeescript": "^2.3.1",
     "es-is": "^3.3.10",
