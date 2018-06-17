@@ -2,8 +2,9 @@
   "name": "executive",
   "version": "1.6.0",
   "description": "Elegant command execution with built-in control flow",
-  "main": "lib/executive.js",
-  "module": "lib/executive.mjs",
+  "main": "lib/executive.cjs.js",
+  "module": "lib/executive.es6.js",
+  "jsnext:main": "lib/executive.es6.js",
   "types": "executive.d.ts",
   "files": [
     "executive.d.ts",
