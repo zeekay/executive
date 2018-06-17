@@ -1,6 +1,6 @@
 {
   "name": "executive",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Elegant command execution with built-in control flow",
   "main": "lib/executive.cjs.js",
   "module": "lib/executive.es6.js",
