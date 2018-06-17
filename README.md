@@ -160,33 +160,34 @@ an error will be thrown with `exec.sync` if `syncThrows` is enabled.
 Will cause `exec.sync` to throw errors rather than returning them.
 
 ## Extra
-Great with `sake`, `grunt`, `gulp` and other task runners. Even better mixed
-with generator-based control flow libraries and/or ES7 `async`/`await`.
+Great with `sake`, `grunt`, `gulp` and other task runners. Even nicer with
+`async` and `await`.
 
-Complex example using [`sake`](http://github.com/sakejs/sake-cli):
+Fancy example using [`sake`](http://github.com/sakejs/sake-cli):
 
-```coffeescript
-task 'package', 'Package project', ->
-  # Create dist folder
-  await exec '''
+```javascript
+task('package', 'Package project', => {
+  // Create dist folder
+  await exec(`
     mkdir -p dist/
     rm   -rf dist/*
-    '''
+  `)
 
-  # Copy assets to dist
-  await exec.parallel '''
+  // Copy assets to dist in parallel
+  await exec.parallel(`
     cp manifest.json dist/
     cp -rf assets/   dist/
     cp -rf lib/      dist/
     cp -rf views/    dist/
-    '''
+  `)
 
-  # Get current git commit hash
-  {stdout} = await exec 'git rev-parse HEAD'
-  hash     = stdout.substring 0, 8
+  // Get current git commit hash
+  let {stdout} = await exec('git rev-parse HEAD')
+  let hash     = stdout.substring(0, 8)
 
   # Zip up dist
-  exec "zip -r package-#{hash}.zip dist/"
+  exec(`zip -r package-${hash}.zip dist/`)
+})
 ```
 
 You can find more usage examples in the [tests](test/test.coffee).
