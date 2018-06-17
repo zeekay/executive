@@ -9,10 +9,10 @@
 
 > An elegant `child_process.spawn`
 
-Executive is a simple library which provides a more intuitive interface to
-[`child_process.spawn`][child_process]. Very useful with build tools and task
-runners. Async and sync command execution with built-in control flow for
-executing multiple commands and collecting results.
+Executive is simple and intuitive interface to
+[`child_process.spawn`][child_process] with zero depdencies. Built-in support
+for async and sync process creation, built-in flow control and automatic shell
+make working with external processes in Node easy.
 
 ## Features
 - Async callback, promise and sync APIs
@@ -22,11 +22,12 @@ executing multiple commands and collecting results.
 - Mix simple string commands with functions and promises returning commands
 - Multi-line strings parsed as multiple commands and executed sequentially
 - Streams `stderr` and `stdout` rather than blocking on command completion
+- Included TypeScript type definition
 - No external dependencies
 
 ## Install
 ```bash
-$ npm install executive
+$ npm install executive --save-dev
 ```
 
 ## Usage
