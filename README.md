@@ -103,7 +103,7 @@ Options are passed as the second argument to exec. Helper methods for
 `quiet`, `interactive`, `parallel` and `sync` do what you expect.
 
 ```javascript
-exec('ls', { options: 'quiet' })
+exec('ls', { quiet: true })
 ```
 
 and
