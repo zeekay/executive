@@ -9,4 +9,4 @@ declare namespace exec {
   export function sync(command: string | any[], options?: any, callback?: any): any
 }
 
-export = exec
+export default exec
